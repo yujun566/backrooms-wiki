@@ -1,0 +1,689 @@
+cat > /mnt/user-data/outputs/backrooms.html << 'HTMLEOF'
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE BACKROOMS — 무한 보존판 대백과사전</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+<style>
+:root {
+  --yellow:#ded5b8;--yellow-dark:#c9bb96;--yellow-deeper:#a89a75;
+  --dark:#0f0e0a;--dark2:#1a1810;--dark3:#252218;--dark4:#2f2b1c;
+  --green:#5a8a2a;--green-bright:#8abb4a;
+  --red:#8b2020;--red-bright:#cc3333;--red-deep:#ff2020;
+  --amber:#c8861a;--amber-bright:#e8a820;--amber-dim:#7a5010;
+  --text:#ded5b8;--text-dim:#7a7050;--text-mid:#aba080;
+  --border:#4a4028;--border-bright:#7a6830;
+  --cyan:#2a7a7a;--cyan-bright:#4ababa;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:100%;height:100%;background:var(--dark);color:var(--text);font-family:'Share Tech Mono',monospace;overflow-x:hidden;}
+body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.07) 2px,rgba(0,0,0,0.07) 4px);pointer-events:none;z-index:9999;}
+body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,0.75) 100%);pointer-events:none;z-index:9998;}
+@keyframes flicker{0%{opacity:1;}91%{opacity:1;}92%{opacity:.88;}93%{opacity:1;}95%{opacity:.93;}96%{opacity:1;}100%{opacity:1;}}
+@keyframes flicker-fast{0%,100%{opacity:1;}50%{opacity:.94;}}
+@keyframes scandown{0%{transform:translateY(-100vh);}100%{transform:translateY(200vh);}}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+@keyframes pulse-glow{0%,100%{text-shadow:0 0 8px var(--amber),0 0 20px rgba(200,134,26,.3);}50%{text-shadow:0 0 18px var(--amber),0 0 45px rgba(200,134,26,.6),0 0 70px rgba(200,134,26,.15);}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+@keyframes glitch{0%,100%{clip-path:inset(0 0 100% 0);}10%{clip-path:inset(10% 0 60% 0);transform:translate(-3px);}20%{clip-path:inset(40% 0 40% 0);transform:translate(3px);}30%{clip-path:inset(60% 0 20% 0);transform:translate(-2px);}50%{clip-path:inset(0 0 100% 0);}}
+@keyframes noise{0%,100%{transform:translate(0,0);}10%{transform:translate(-2%,-1%);}30%{transform:translate(1%,2%);}60%{transform:translate(-1%,1%);}80%{transform:translate(2%,-2%);}}
+.scanline-sweep{position:fixed;top:0;left:0;right:0;height:3px;background:linear-gradient(to bottom,transparent,rgba(222,213,184,.05),transparent);animation:scandown 10s linear infinite;pointer-events:none;z-index:9997;}
+body{animation:flicker 7s infinite;}
+
+/* HEADER */
+.site-header{position:sticky;top:0;z-index:100;background:var(--dark2);border-bottom:2px solid var(--border);padding:10px 14px;display:flex;flex-direction:column;align-items:center;gap:5px;box-shadow:0 4px 24px rgba(0,0,0,.9);}
+.site-header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,var(--amber),transparent);animation:flicker-fast 2s infinite;}
+.logo{font-family:'VT323',monospace;font-size:clamp(20px,5vw,36px);color:var(--amber-bright);letter-spacing:5px;animation:pulse-glow 3s ease-in-out infinite;text-align:center;}
+.logo-sub{font-size:9px;color:var(--text-dim);letter-spacing:3px;text-transform:uppercase;}
+.status-bar{display:flex;gap:14px;font-size:9px;color:var(--text-dim);flex-wrap:wrap;justify-content:center;}
+.status-item{display:flex;gap:3px;align-items:center;}
+.status-dot{width:5px;height:5px;border-radius:50%;background:var(--green-bright);animation:blink 1.8s infinite;}
+.status-dot.red{background:var(--red-bright);}
+
+/* NAV TABS */
+.nav-tabs{display:flex;overflow-x:auto;gap:3px;padding:8px 10px;background:var(--dark2);border-bottom:1px solid var(--border);scrollbar-width:none;}
+.nav-tabs::-webkit-scrollbar{display:none;}
+.nav-tab{flex-shrink:0;padding:7px 14px;background:var(--dark3);border:1px solid var(--border);color:var(--text-dim);font-family:'Share Tech Mono',monospace;font-size:11px;cursor:pointer;letter-spacing:1px;transition:all .15s;white-space:nowrap;}
+.nav-tab:hover{background:var(--dark4);border-color:var(--amber);color:var(--amber);}
+.nav-tab.active{background:var(--dark);border-color:var(--amber-bright);color:var(--amber-bright);box-shadow:0 0 14px rgba(200,134,26,.35);}
+
+/* MAIN LAYOUT */
+.main-container{display:flex;height:calc(100vh - 120px);overflow:hidden;}
+
+/* SIDEBAR */
+.sidebar{width:230px;flex-shrink:0;background:var(--dark2);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+.sidebar-search{padding:8px;}
+.sidebar-search input{width:100%;background:var(--dark);border:1px solid var(--border);color:var(--text);font-family:'Share Tech Mono',monospace;font-size:11px;padding:5px 8px;outline:none;letter-spacing:1px;}
+.sidebar-search input:focus{border-color:var(--amber);}
+.sidebar-search input::placeholder{color:var(--text-dim);}
+.sidebar-count{padding:4px 10px;font-size:8px;color:var(--text-dim);border-bottom:1px solid var(--border);background:var(--dark);}
+.sidebar-list{flex:1;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+.sidebar-list::-webkit-scrollbar{width:3px;}
+.sidebar-list::-webkit-scrollbar-thumb{background:var(--border);}
+.sidebar-item{padding:7px 10px;border-bottom:1px solid rgba(74,64,40,.3);cursor:pointer;font-size:10px;color:var(--text-dim);transition:all .1s;display:flex;align-items:center;gap:5px;}
+.sidebar-item:hover{background:rgba(255,255,255,.04);color:var(--text);}
+.sidebar-item.active{background:rgba(200,134,26,.12);color:var(--amber-bright);border-left:3px solid var(--amber);}
+.sidebar-item .item-num{font-family:'VT323',monospace;font-size:13px;color:var(--amber);min-width:26px;}
+.sidebar-item .item-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;}
+
+/* CONTENT AREA */
+.content-area{flex:1;overflow-y:auto;padding:18px;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+.content-area::-webkit-scrollbar{width:3px;}
+.content-area::-webkit-scrollbar-thumb{background:var(--border);}
+
+/* ENTRY CARD */
+.entry-card{animation:fadeIn .2s ease;max-width:880px;}
+.entry-header{border:1px solid var(--border);background:var(--dark2);padding:14px 18px;margin-bottom:14px;position:relative;overflow:hidden;}
+.entry-header::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,var(--amber-dim),var(--amber),var(--amber-bright),var(--amber),var(--amber-dim));}
+.entry-id{font-family:'VT323',monospace;font-size:12px;color:var(--text-dim);letter-spacing:3px;margin-bottom:3px;}
+.entry-title{font-family:'VT323',monospace;font-size:clamp(20px,4vw,30px);color:var(--amber-bright);letter-spacing:2px;line-height:1.1;margin-bottom:10px;}
+.entry-tags{display:flex;flex-wrap:wrap;gap:5px;}
+.tag{padding:2px 7px;border:1px solid;font-size:9px;letter-spacing:1px;}
+.tag-safe{border-color:var(--green);color:var(--green-bright);}
+.tag-warn{border-color:var(--amber);color:var(--amber);}
+.tag-danger{border-color:#c86020;color:#e88040;}
+.tag-extreme{border-color:var(--red);color:var(--red-bright);}
+.tag-death{border-color:#6a0000;color:#ff4444;}
+.tag-impossible{border-color:#3a0000;color:#ff2020;animation:blink .9s infinite;}
+.tag-default{border-color:var(--border);color:var(--text-dim);}
+
+.entry-section{border:1px solid var(--border);background:var(--dark2);margin-bottom:10px;}
+.entry-section-head{padding:6px 14px;background:var(--dark3);border-bottom:1px solid var(--border);font-size:10px;color:var(--amber);letter-spacing:3px;text-transform:uppercase;}
+.entry-section-body{padding:12px 14px;font-size:11.5px;line-height:1.85;color:var(--text);}
+.entry-section-body p{margin-bottom:8px;}
+.entry-section-body p:last-child{margin-bottom:0;}
+.highlight{color:var(--amber-bright);}
+.danger-text{color:var(--red-bright);}
+.safe-text{color:var(--green-bright);}
+.cyan-text{color:var(--cyan-bright);}
+.warn-text{color:#e88040;}
+
+/* Welcome */
+.welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:30px;gap:18px;}
+.welcome-ascii{font-family:'VT323',monospace;font-size:clamp(24px,6vw,52px);color:var(--amber);line-height:1.0;animation:pulse-glow 3s ease-in-out infinite;white-space:pre;}
+.welcome-desc{max-width:580px;font-size:11px;line-height:1.9;color:var(--text-dim);border:1px solid var(--border);padding:14px 18px;background:var(--dark2);}
+.welcome-stats{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;}
+.stat-box{border:1px solid var(--border);padding:10px 18px;text-align:center;background:var(--dark2);}
+.stat-num{font-family:'VT323',monospace;font-size:36px;color:var(--amber-bright);display:block;}
+.stat-label{font-size:9px;color:var(--text-dim);letter-spacing:2px;}
+
+/* Classified stamp */
+.classified-stamp{font-family:'VT323',monospace;font-size:24px;color:rgba(139,32,32,.55);border:3px solid rgba(139,32,32,.45);padding:3px 10px;display:inline-block;transform:rotate(-7deg);margin-bottom:8px;letter-spacing:4px;}
+
+/* Mobile */
+@media(max-width:640px){
+  .main-container{height:calc(100vh - 110px);}
+  .sidebar{width:160px;}
+  .sidebar-item .item-name{font-size:9px;}
+  .content-area{padding:10px;}
+  .entry-header{padding:10px;}
+  .entry-title{font-size:18px;}
+  .welcome-ascii{font-size:20px;}
+}
+@media(max-width:420px){
+  .sidebar{width:130px;}
+  .sidebar-item{padding:5px 6px;}
+  .content-area{padding:6px;}
+  .entry-section-body{font-size:10.5px;}
+}
+</style>
+</head>
+<body>
+<div class="scanline-sweep"></div>
+<header class="site-header">
+  <div class="logo">▓ THE BACKROOMS ▓</div>
+  <div class="logo-sub">무한 보존판 완전 판본 대백과사전 — M.E.G. ARCHIVE SYSTEM v4.7</div>
+  <div class="status-bar">
+    <span class="status-item"><span class="status-dot"></span>시스템 온라인</span>
+    <span class="status-item"><span class="status-dot"></span>레벨 아카이브: ACTIVE</span>
+    <span class="status-item"><span class="status-dot red"></span>보안등급: [기밀]</span>
+    <span class="status-item">M.E.G. 공인 데이터베이스</span>
+  </div>
+</header>
+<nav class="nav-tabs">
+  <button class="nav-tab active" onclick="switchTab('levels')">▣ 레벨 아카이브</button>
+  <button class="nav-tab" onclick="switchTab('entities')">☠ 엔티티 데이터베이스</button>
+  <button class="nav-tab" onclick="switchTab('items')">◈ 생존 물품 도감</button>
+  <button class="nav-tab" onclick="switchTab('orgs')">◉ 조직 & 집단</button>
+  <button class="nav-tab" onclick="switchTab('behinds')">⚠ 기밀 파일</button>
+</nav>
+<div class="main-container">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-search">
+      <input type="text" id="searchInput" placeholder="검색..." oninput="filterList()">
+    </div>
+    <div class="sidebar-count" id="sidebarCount"></div>
+    <div class="sidebar-list" id="sidebarList"></div>
+  </aside>
+  <main class="content-area" id="contentArea">
+    <div class="welcome" id="welcomeScreen">
+      <div class="welcome-ascii">█ BACKROOMS █&#10;무한 차원 아카이브</div>
+      <div class="welcome-desc">
+        백룸(The Backrooms)은 현실의 물리 법칙을 이탈(Noclip)했을 때 진입하게 되는 미지의 차원 구조체입니다.<br><br>
+        본 데이터베이스는 M.E.G.(Major Explorer Group) 및 전 세계 차원 연구학자들의 기록을 바탕으로 알려진 정식 레벨·엔티티·생존 물품·조직 정보를 수록하였습니다.<br><br>
+        <span style="color:var(--red-bright)">⚠ 경고: 이 문서의 정보는 현장 보고서와 교차 검증 없이 단독으로 신뢰하지 마십시오.</span>
+      </div>
+      <div class="welcome-stats">
+        <div class="stat-box"><span class="stat-num" id="statLevels">0</span><span class="stat-label">레벨</span></div>
+        <div class="stat-box"><span class="stat-num" id="statEntities">0</span><span class="stat-label">엔티티</span></div>
+        <div class="stat-box"><span class="stat-num" id="statItems">0</span><span class="stat-label">물품</span></div>
+        <div class="stat-box"><span class="stat-num" id="statOrgs">0</span><span class="stat-label">조직</span></div>
+        <div class="stat-box"><span class="stat-num" id="statBehinds">0</span><span class="stat-label">기밀파일</span></div>
+      </div>
+    </div>
+    <div id="entryView" style="display:none;"></div>
+  </main>
+</div>
+
+<script>
+// ============================================================
+// ██████  LEVELS DATA ██████
+// ============================================================
+const LEVELS = [
+{id:"L0",num:0,name:"The Lobby — 로비",danger:"Class 0",env:"물리적 안정",entity_rate:"매우 낮음",resources:"아몬드 워터, 통조림",
+desc:`레벨 0은 백룸의 진입점이자 가장 유명한 레벨입니다. 끝없이 이어지는 노란색 단색 벽지, 축축한 베이지색 카펫, 그리고 천장에서 끊임없이 웅웅거리는 형광등이 이 공간을 정의합니다. 이 레벨은 고요하고 단조롭지만, 바로 그 특성 때문에 많은 방랑자들이 극심한 심리적 압박을 느낍니다. 공간 자체에는 뚜렷한 엔티티가 존재하지 않으나, 장시간 체류 시 인지 왜곡과 방향감각 상실이 보고되었습니다.\n\n공간의 총 넓이는 측정 불가하며, 레벨 내부에서 이동 거리 추적 장치는 무작위로 오류를 표시합니다. 복도와 방들은 일관성 없이 배치되어 있으며, 같은 경로로 이동해도 다른 구역에 도달하는 경우가 빈번합니다. 냄새는 오래된 사무실의 탄 먼지와 습한 카펫이 혼합된 특유의 냄새로, 생존자들은 이 냄새를 백룸의 '심리적 각인'이라 부릅니다.\n\n온도는 약 18-22°C로 비교적 쾌적하나, 유독 습한 구역(습도 80% 이상)도 존재합니다. 레벨 0의 형광등은 실제로는 서서히 깜빡이며 약 0.3Hz의 낮은 주파수로 진동하는데, 인간의 눈으로는 거의 감지되지 않지만 장기 노출 시 두통과 불안감을 유발하는 것으로 확인되었습니다.`,
+geo:`[중앙 홀 구역] 레벨 0의 진입 시 처음 마주치는 넓은 개방 구역. 엔티티 활동이 가장 억제된 안전 지점으로 M.E.G. 캠프 알파의 위치도 이 구역에 해당합니다.\n\n[미로 복도] 끝없이 이어지는 격자형 복도 구간. 일부 복도는 천장이 낮아 2m 이하이며, 특정 구역에서는 바닥의 카펫이 젖어 있고 물이 스며드는 현상이 목격됩니다.\n\n[정전 구역] 형광등이 모두 꺼진 완전 암흑 구역. 이 구역에서는 스마일러(Smiler) 목격 빈도가 급증합니다.\n\n[벽지 박리 구역] 벽지가 너덜너덜하게 벗겨진 구역으로, 벽면 뒤에 어두운 빈 공간이 보이는 경우가 있습니다. 해당 공간 진입 시도는 권고되지 않습니다.`,
+survival:`【즉시 탈출 신호】 벽지가 비정상적으로 수분을 흡수하여 일렁이거나, 천장 형광등이 완전히 꺼질 경우 즉시 이동하십시오.\n\n【이동 전략】 레벨 0을 통과하려면 항상 일정한 방향(권장: 왼쪽 벽면을 오른손으로 짚으며 이동)으로 움직이십시오. 무작위 방향 전환은 원형 루프에 빠질 위험이 있습니다.\n\n【청각 경보】 주변에서 자신의 이름을 부르는 소리, 울음소리, 혹은 가족의 목소리가 들릴 경우 절대 반응하지 마십시오. 이는 스마일러 또는 차원적 잔향음(Echo Entity)의 유인 전술입니다.\n\n【레벨 탈출법】 Level 1 진입: 이 레벨 내 특정 벽면이 마치 스티로폼처럼 느껴진다면 그 벽을 손으로 밀어 통과하면 Level 1로 이동됩니다.`},
+
+{id:"L1",num:1,name:"Lurking Danger — 유지 보수 구역",danger:"Class 1",env:"공간 가변형 미로",entity_rate:"낮음",resources:"로열 젤리, 메모리 주스, 식량 통조림",
+desc:`레벨 1은 백룸의 첫 번째 '위험' 구역입니다. 콘크리트 재질의 회색 벽과 천장, 바닥을 따라 굴러다니는 나무 팔레트와 금속 선반들, 그리고 간헐적으로 작동하거나 꺼지는 천장 형광등이 특징입니다. Level 0의 매끄럽고 단조로운 환경과 달리, 이곳은 모서리와 폐쇄된 복도, 그리고 난잡하게 쌓인 창고 박스들로 시야가 극도로 제한됩니다.\n\n이 레벨에는 실제 엔티티들이 활동하며 특히 야행성 엔티티들이 암흑 구역에 집중적으로 서식합니다. 레벨 내부 온도는 불안정하여 어떤 구역은 40°C를 넘는 산업용 오븐 수준의 고온이고, 어떤 구역은 냉동 창고처럼 영하 15°C까지 내려갑니다. 이는 동일 레벨 내에서도 섹터별로 환경 조건이 극단적으로 다를 수 있음을 시사합니다.\n\n레벨 1에는 외부 현실에서 유입된 것으로 추정되는 통조림 식품, 의류, 의료 용품 등이 간혹 발견됩니다. M.E.G.는 이 레벨에 캠프 베타(Camp Beta)를 설치하여 방랑자들의 임시 거점으로 활용하고 있습니다.`,
+geo:`[창고 섹터 A] 나무 팔레트와 화물 박스로 가득 찬 개방형 창고 구역. 식량과 물자 발견 빈도가 가장 높습니다.\n\n[파이프라인 터널] 두꺼운 금속 파이프가 가득한 좁은 통로 구역. 파이프 내부에서 무언가가 움직이는 소리가 간헐적으로 들립니다.\n\n[붕괴 구역] 천장과 바닥 일부가 무너진 불안정 구역. 물리적 통행 위험과 함께 엔티티 은신 빈도가 매우 높습니다.\n\n[캠프 베타] M.E.G. 공식 거점. 보호 구역으로 표시된 금속 파티션으로 구분되어 있으며, 소규모 의료 시설과 통신 장비가 배치되어 있습니다.`,
+survival:`【조명 관리】 레벨 1에서는 빛이 곧 생명입니다. 배터리 손전등 혹은 네온 플루이드를 항시 소지하십시오. 단, 빛이 너무 강하면 역으로 엔티티를 유인할 수 있으므로 필요 최소한의 밝기만 유지하십시오.\n\n【소음 통제】 금속 물체를 건드리면 반향음이 넓게 퍼집니다. 엔티티 활동 구역에서는 움직임을 최소화하십시오.\n\n【출구 탐색】 레벨 2 진입은 레벨 1 내 특정 하수구 덮개나 배관 구멍을 통해 이루어집니다. 일반 문은 보통 동일 레벨 내 다른 구역으로 연결됩니다.`},
+
+{id:"L2",num:2,name:"Pipe Dreams — 파이프 꿈",danger:"Class 2",env:"고온·증기 위험",entity_rate:"중간",resources:"아몬드 워터 희귀, 공구류",
+desc:`레벨 2는 산업용 거대 배관 시스템이 미로처럼 교차하는 위험한 공간입니다. 뜨거운 증기를 내뿜는 파이프, 정체불명의 검은 액체가 흐르는 대형 배관, 그리고 기계 소음이 끊이지 않는 환경입니다. 천장 높이는 구역에 따라 2m에서 20m까지 다양하며, 일부 구역에서는 파이프가 천장과 바닥 모두를 관통해 완전한 이동 통로를 막고 있습니다.\n\n이 레벨의 가장 큰 물리적 위험은 갑작스러운 증기 분출입니다. 노후화된 파이프에서 불규칙적으로 폭발하듯 분출되는 고온의 증기는 직접 닿을 경우 심각한 화상을 입힐 수 있습니다. 또한 검은 액체는 피부와 접촉 시 신경계에 영향을 주는 독성을 지닌 것으로 분석되었습니다.\n\n레벨 2에는 윈도우(Window)라는 중립 엔티티가 서식하며, 이들은 파이프 구조물 내에 숨어 방랑자를 조용히 관찰합니다. 적대적이지 않으나 예측 불가능한 행동을 보이며, 때로는 방랑자에게 올바른 출구 방향을 암시하는 행동(특정 방향으로 기어가는 등)을 보이기도 합니다.`,
+geo:`[메인 배관 고속도로] 직경 2m 이상의 거대 파이프들이 평행하게 뻗은 주요 이동 통로. 비교적 안정적이나 증기 분출 구간을 파악해야 합니다.\n\n[증기 지옥 구역] 밀도 높은 증기로 시야가 50cm 미만으로 제한된 위험 구역. 방향감각 상실이 필연적으로 발생합니다.\n\n[기계실 홀] 거대 펌프와 밸브가 가득한 넓은 공간. 지속적인 진동으로 인해 소리로 엔티티를 탐지하기가 매우 어렵습니다.\n\n[누출 지대] 파이프가 파열되어 검은 액체가 바닥에 고인 구역. 절대 진입 금지.`,
+survival:`【증기 분출 예측】 특정 파이프 이음새 부분이 미세하게 진동하거나 소리가 커지면 즉시 해당 구역에서 이탈하십시오. 증기 분출은 예고 없이 발생합니다.\n\n【검은 액체 회피】 검은 액체가 고인 구역은 우회하십시오. 불가피한 경우 두꺼운 천이나 방수 소재로 피부를 완전히 덮으십시오.\n\n【탈출구】 레벨 3 진입: 특정 환기구 혹은 레버를 당겨 열리는 비상구 철문을 통해 이동합니다.`},
+
+{id:"L3",num:3,name:"Electrical Station — 전기 정전",danger:"Class 2",env:"정전기 위험, 기계 오작동",entity_rate:"중간",resources:"배터리, 공구, 드문 아몬드 워터",
+desc:`레벨 3은 거대한 전기 변전소와 배전반들이 가득 찬 차원입니다. 수십만 볼트의 전류가 흐르는 고압 변전기, 끊임없이 윙윙거리는 전기 아크 소리, 그리고 공기 중에 퍼져 있는 강한 정전기가 이 레벨의 특징입니다. 공기 자체가 전기로 포화되어 있어 철제 물체를 만지면 가벼운 감전이 발생합니다.\n\n레벨 3의 가장 큰 위험은 전자기기 오작동입니다. 이 레벨에서는 손전등, 라디오, GPS 등 모든 전자 장치가 간헐적으로 오작동하거나 완전히 고장납니다. 특히 레벨 깊은 곳으로 갈수록 전자기장이 강해져 전자 장치의 작동 시간이 급격히 단축됩니다. 이로 인해 방랑자들은 아날로그 도구(나침반, 기계식 시계, 촛불)에 의존해야 합니다.\n\n이 레벨에는 클라리티(Clump)가 서식하며, 전기 장치와 결합하여 위장하거나 전기 신호를 방출해 방랑자를 혼란시킵니다. 변전기에서 정상 소리와 다른 이상한 리듬의 전기 버즈음이 들린다면 클라리티의 존재를 의심해야 합니다.`,
+geo:`[고압 변전기 홀] 레벨의 중심부. 수십 미터 높이의 거대 변전기들이 늘어선 구역으로, 실수로 접촉 시 치명적입니다.\n\n[배전반 미로] 수백 개의 배전반이 방처럼 나뉜 미로형 구조. 각 배전반에는 전선이 무수히 연결되어 있으며 일부는 바닥을 따라 늘어져 있습니다.\n\n[정전 구역] 전기 공급이 완전히 끊긴 암흑 섹터. 전자기장이 오히려 낮아 전자 장치가 작동하지만 시야가 전혀 없습니다.\n\n[발전기실] 오래된 디젤 발전기들이 가동 중인 구역. 연기와 소음이 심하지만 배터리 수집이 가능합니다.`,
+survival:`【비전자 도구 우선】 레벨 3에서는 기계식 나침반과 종이 지도, 촛불 또는 오일 램프를 사용하십시오.\n\n【금속 접촉 최소화】 맨손으로 금속 구조물을 잡지 마십시오. 고무 장갑이 없다면 두꺼운 천으로 손을 감싸 절연하십시오.\n\n【이상 소리 주의】 변전기에서 '딸깍' 리듬이나 특정 멜로디 패턴의 소리가 난다면 즉시 해당 구역에서 이탈하십시오.`},
+
+{id:"L4",num:4,name:"Abandoned Office — 빈 사무실",danger:"Class 1",env:"비교적 안전, 심리 오염 주의",entity_rate:"낮음",resources:"문구류, 통조림, 메모 주스 다수",
+desc:`레벨 4는 백룸에서 인류의 가장 안전한 거점 중 하나로 알려진 레벨입니다. 끝없이 이어지는 사무실 공간으로, 책상·캐비닛·파일 서랍·오래된 컴퓨터 모니터들이 가득합니다. 창문은 있지만 바깥은 오직 칠흑 같은 어둠만 보이며, 유리를 깨고 나가려 해도 콘크리트 벽 또는 또 다른 사무실로 이어집니다.\n\nM.E.G.의 가장 중요한 거점 '캠프 히페리온(Camp Hyperion)'이 레벨 4에 위치합니다. 이 캠프는 100명 이상을 수용할 수 있는 식수 정화 시설, 소규모 의료 센터, 통신 장비를 갖추고 있습니다. 레벨 4에서 발견되는 문서들 중 일부는 외부 현실 세계와 연결된 정보를 담고 있으며, M.E.G. 연구팀이 분석 중입니다.\n\n이 레벨의 주요 위험은 물리적이 아닌 정신적 위협입니다. 장기 체류 시 방랑자들은 '사무실 환각(Office Hallucination)'이라 불리는 현상을 경험하는데, 주변 사무실 공간이 실제 삶의 직장처럼 느껴지고 의미 없는 사무 업무(빈 서류 정리, 꺼진 컴퓨터 모니터 응시 등)에 강박적으로 집착하게 됩니다. 이 상태에 빠진 방랑자를 '사무직 유령(Office Ghost)'이라 부르며, 이들은 탈출 의지를 잃고 레벨 4에 영구 정착합니다.`,
+geo:`[캠프 히페리온] M.E.G. 공식 거점. 다수의 보안 도어와 감시 카메라(배터리 구동)로 보호된 구역.\n\n[중앙 업무 구역] 수백 개의 책상이 열 지어 배치된 오픈 플랜 사무실. 발견 물자가 풍부합니다.\n\n[임원 층] 더 크고 호화로운 집기들이 있는 상층부 섹터. 잠긴 캐비닛 내에서 중요 문서가 발견되기도 합니다.\n\n[서버실] 오래된 서버들이 가동 중인 실. 전자기 간섭 없이 전자기기 충전이 가능한 희귀 구역입니다.`,
+survival:`【사무실 환각 경보】 자신도 모르게 빈 서류를 정리하거나 꺼진 컴퓨터를 멍하니 바라보게 된다면, 동반자에게 즉시 알리고 격렬한 신체 활동(달리기, 큰 소리로 말하기)으로 환각 상태를 탈출하십시오.\n\n【물자 수집】 이 레벨은 다른 레벨에 비해 식량과 물자 발견 빈도가 높습니다. 체류 가능한 한 최대한 보급품을 확보하십시오.\n\n【M.E.G. 협조】 캠프 히페리온을 발견하면 무조건 접근하여 등록하십시오. 식수, 의료, 안내 서비스를 제공받을 수 있습니다.`},
+
+{id:"L5",num:5,name:"Terror Hotel — 공포의 호텔",danger:"Class 4",env:"극도로 위험, 폴터가이스트",entity_rate:"매우 높음",resources:"극히 드묾, 식수 없음",
+desc:`레벨 5는 백룸에서 가장 악명 높은 레벨 중 하나입니다. 1930년대 그랜드 호텔 양식의 거대한 건물 내부로, 화려하지만 기괴하게 뒤틀린 복도, 황금빛 벽지, 바래고 오염된 카펫이 이어집니다. 객실은 무한히 존재하며 각 객실 번호가 논리적 순서를 따르지 않습니다(예: 객실 412 옆에 객실 8899).\n\n가장 큰 특징은 레벨 자체가 '살아있다'는 점입니다. 가구가 스스로 움직이고, 문이 잠기거나 열리며, 복도의 길이가 방랑자가 걷는 동안 변합니다. 이 폴터가이스트 현상은 완전히 무작위적이지 않으며 마치 레벨이 방랑자를 가두려는 의도를 가진 것처럼 행동합니다. 혼자인 경우 특히 레벨의 '공격성'이 높아지는 것이 관찰되었습니다.\n\n레벨 5에는 Party Goers(파티고어)가 빈번히 출몰합니다. 이들은 인간 골격이 완전히 뒤틀린 형태로 파티용 모자를 쓰거나 형형색색의 파티 복장을 하고 있습니다. 특유의 날카로운 웃음소리를 내며 방랑자를 추격합니다.`,
+geo:`[로비 홀] 레벨 진입 시 도달하는 거대한 호텔 로비. 샹들리에가 천천히 흔들리며 포개진 카운터 뒤에는 아무도 없지만 종종 벨 소리가 납니다.\n\n[무한 복도] 레벨의 대부분을 차지하는 객실 복도. 주기적으로 벽이 이동하거나 새로운 문이 생성됩니다.\n\n[연회장] 부패한 음식이 차려진 거대한 테이블이 있는 공간. 파티고어의 주요 집결 구역입니다. 절대 진입 금지.\n\n[지하 주방] 오래된 주방 설비가 있는 지하 구역. 레벨 6 진입 경로가 있으나 극도로 위험합니다.`,
+survival:`【파티고어 대응】 웃음소리가 들리면 즉시 숨으십시오. 직선 복도에서는 반드시 후퇴하고, 객실 내부에 은신하되 문을 잠그십시오. 하지만 문이 자동으로 열릴 수 있으므로 바리케이드를 구축하십시오.\n\n【폴터가이스트 대응】 가구가 움직이거나 복도 형태가 변하면 즉시 멈추고 현재 위치를 재파악하십시오. 공황 상태로 달리면 더 깊은 레벨로 빨려 들어갈 위험이 있습니다.\n\n【생존율 주의】 레벨 5의 생존율은 백룸 내에서도 최하위권입니다. 진입 전 반드시 대규모 팀을 구성하고 탈출 계획을 수립하십시오.`},
+
+{id:"L6",num:6,name:"Lights Out — 전구실 / 완전 암흑",danger:"Class 3",env:"완전 암흑, 청각 의존",entity_rate:"높음",resources:"없음",
+desc:`레벨 6은 완전한 암흑으로 가득 찬 차원입니다. 어떠한 광원도 유지되지 않으며, 가져온 손전등도 20초~2분 내에 반드시 꺼집니다. 불꽃(라이터, 성냥)도 마찬가지로 작동을 거부합니다. 레벨 자체가 빛을 흡수하거나 소멸시키는 속성을 가진 것으로 추정됩니다. 오직 네온 플루이드(Neon Fluid)만이 이 레벨에서 지속적인 발광을 유지할 수 있습니다.\n\n이 레벨에서는 청각이 유일한 감각적 수단입니다. 공간은 단단한 바닥과 벽으로 이루어진 미로형 구조이며, 특정 지점에서 멀리서 들려오는 희미한 기계 소리나 물방울 소리를 따라가면 출구에 근접할 수 있습니다.\n\n스마일러(Smiler)는 레벨 6의 주 엔티티입니다. 이들은 완전 암흑에서 두 개의 빛나는 흰 눈과 넓게 찢어진 미소만 보이는 형태로, 어둠 속에서 빛을 내는 유일한 존재입니다. 빛을 발하는 눈이 방랑자를 추적하므로 네온 플루이드로 구역을 밝히는 것이 유일한 방어 수단입니다.`,
+geo:`[입구 전이 구역] 레벨 5에서 진입 시 처음 도달하는 구역. 빛이 서서히 소멸되는 것을 느낄 수 있습니다.\n\n[음향 미로] 벽에 음파를 반사하여 구조를 파악해야 하는 복잡한 통로. 손뼉을 치며 에코로 지형을 파악하는 반향위치추적법이 효과적입니다.\n\n[스마일러 밀집 구역] 다수의 스마일러가 집결하는 구역. 네온 플루이드 없이는 통과 불가.\n\n[출구 지점] 바닥에서 올라오는 희미한 진동을 느낄 수 있는 지점 근처에 레벨 7 또는 레벨 0으로 연결되는 노클립 포인트가 있습니다.`,
+survival:`【네온 플루이드 필수】 레벨 6 진입 전 반드시 네온 플루이드를 충분히 확보하십시오. 이것이 없으면 생존 가능성이 사실상 0에 수렴합니다.\n\n【소음 최소화】 스마일러는 시각보다 청각이 더 민감합니다. 조용히, 천천히 이동하십시오.\n\n【팀 연결】 팀 이동 시 앞사람의 어깨나 옷자락을 잡고 일렬로 이동하십시오. 단 1명만 네온 플루이드를 사용하여 엔티티 유인 가능성을 최소화하십시오.`},
+
+{id:"L7",num:7,name:"Thalassophobia — 수심 공포증",danger:"Class 3",env:"수중 위험, 해양 엔티티",entity_rate:"중간~높음",resources:"희귀",
+desc:`레벨 7은 끝이 보이지 않는 실내 수영장처럼 생긴 공간으로, 물이 아닌 어두운 회색빛 액체가 가득합니다. 천장은 희미한 형광 조명으로 가득하며, 수면 위의 공간은 레벨 0과 유사한 습한 타일 복도로 이어집니다. 수중으로 들어가면 가시 거리는 극히 제한되고, 수중 압력은 일반 물보다 훨씬 높게 측정됩니다.\n\n레벨 7의 수중 환경은 심해 생태계와 유사한 대형 생명체들이 서식합니다. 직접 수중에 들어가거나 수면 근처에서 다리를 물에 담그는 행위는 매우 위험하며, 수중의 대형 엔티티들은 빛을 내는 물체에 강하게 반응합니다.\n\n수면 위의 타일 복도 구역은 레벨 0~2의 축축한 환경과 유사하며, 물 웅덩이와 습한 카펫 구역이 혼재합니다. 이 구역에서는 바닥에 귀를 대면 물 아래에서 올라오는 진동음이 들리며, 수중의 존재들이 복도 구역을 추적하는 소리로 해석됩니다.`,
+geo:`[타일 복도 구역] 수영장 주변의 미끄럽고 물기 있는 타일 바닥. 이동 시 소음 최소화가 중요합니다.\n\n[수면 구역] 거대한 수조 상단. 수면에 근접하지 마십시오.\n\n[수중 통로] 일부 수중 경로를 통해 다른 레벨로 이동할 수 있다고 보고되었으나 생존자 확인 불가.`,
+survival:`【수중 진입 금지】 절대로 이 레벨의 액체에 신체를 담그지 마십시오.\n\n【조명 관리】 수중 엔티티는 강한 빛에 반응합니다. 타일 구역에서도 강한 손전등 사용은 피하십시오.\n\n【진동 청취】 바닥 진동 패턴으로 엔티티의 위치를 유추할 수 있습니다. 5초마다 한 번씩 귀를 바닥에 대고 위협 방향을 확인하십시오.`},
+
+{id:"L8",num:8,name:"Cave System — 동굴 시스템",danger:"Class 2",env:"자연·인공 혼합, 낙석 위험",entity_rate:"중간",resources:"광물, 지하수 (정수 필요)",
+desc:`레벨 8은 자연 석회암 동굴처럼 보이지만 내부 벽면의 일부가 기하학적 타일과 콘크리트 패널로 이루어진 기묘한 혼합 공간입니다. 자연 동굴 구조 내에 사무실 카펫이 깔려 있거나, 스탈락타이트 사이에서 형광등이 매달려 있는 등 서로 다른 두 세계의 법칙이 충돌하는 특징을 보입니다.\n\n이 레벨은 생수와 미네랄 공급원이 있어 생존 관점에서는 비교적 유리하나, 낙석 위험과 불규칙한 중력 구역이 위험 요소입니다. 특정 동굴 지점에서는 중력이 30~50% 약해지거나 방향이 바뀌어 방랑자가 벽면을 걷게 되는 현상이 보고되었습니다.\n\n이 레벨의 거주 엔티티인 록크롤러(Rock Crawler)는 동굴 천장에 매달려 이동하며, 음파 감지를 통해 사냥합니다. 동굴 내부에서 큰 소리를 내거나 바위를 치면 즉시 록크롤러가 반응합니다.`,
+geo:`[석회동굴 구역] 자연 형성 석회암 구조의 대형 동굴. 지하수 획득이 가능합니다.\n\n[타일 인공 구역] 동굴 내부에 갑자기 등장하는 사무실·창고형 인공 구조물. 물자 발견 가능.\n\n[중력 이상 지대] 중력 방향이 임의로 바뀌는 구역. 표시 없이 갑자기 나타납니다.\n\n[심층 동굴] 레벨 깊은 곳의 어두운 동굴 구역. 록크롤러 밀집 서식지.`,
+survival:`【소리 통제 최우선】 동굴 내에서 큰 소리를 내지 마십시오. 속삭임 혹은 수신호로 통신하십시오.\n\n【낙석 경보】 흙먼지나 작은 돌조각이 천장에서 떨어지면 낙석 전조입니다. 즉시 벽면 쪽으로 이동하여 몸을 낮추십시오.\n\n【지하수 처리】 발견되는 지하수는 반드시 끓이거나 정수 장비로 처리 후 음용하십시오. 레벨 8의 지하수에는 신경독성 미네랄이 포함되어 있습니다.`},
+
+{id:"L9",num:9,name:"Suburbs — 교외 지역",danger:"Class 3",env:"영원한 밤, 복제 주택",entity_rate:"높음",resources:"드묾, 일부 주택에 통조림",
+desc:`레벨 9는 끝없는 밤하늘 아래 규격화된 교외 주택들이 끝없이 복제되어 늘어선 거대한 주거 단지입니다. 모든 주택은 동일한 설계도면을 공유하는 것처럼 완전히 동일하며, 집 번호는 무작위 숫자입니다. 잔디밭은 깎인 흔적이 있지만 실제 잔디는 비정상적으로 균일하고 플라스틱처럼 딱딱합니다.\n\n이 레벨의 하늘은 항상 밤이며 달과 별이 없습니다. 가로등만이 주황빛 조명을 제공하나 가로등이 없는 구역은 레벨 6에 준하는 암흑입니다. 주택 내부에 들어가면 외부보다 훨씬 더 복잡한 내부 구조가 나타나며(외관상 2층 주택이지만 내부는 수십 층으로 이어지는 경우), 출구를 찾기가 매우 어렵습니다.\n\n이 레벨의 주요 위험은 하운드(Hound)입니다. 하운드는 이 레벨의 평화로운 거리를 배회하며, 낮처럼 보이는 이 환경에 위장합니다. 평상시에는 개처럼 보이지만 인간의 존재를 감지하면 비정상적인 속도와 힘으로 돌변합니다.`,
+geo:`[메인 스트리트] 가로등이 있는 주요 도로. 상대적으로 안전하나 하운드 순찰 경로입니다.\n\n[주택 내부] 무한히 확장된 내부 구조. 탈출 경로로 사용 시 완전히 탐색하지 않으면 미아가 됩니다.\n\n[가로등 사각지대] 완전 암흑 구역. 하운드와 스마일러가 동시 출몰합니다.\n\n[공원 지대] 이 레벨의 중간중간 나타나는 소규모 공원. 탈출 포탈이 발견된 사례가 있습니다.`,
+survival:`【하운드 식별】 거리를 걷는 개와 하운드를 구분하는 방법: 하운드는 눈이 빛을 반사하지 않고, 발걸음 소리가 없으며, 코를 킁킁거리는 대신 조용히 공기를 흡입합니다.\n\n【주택 진입 최소화】 물자 수집 외의 목적으로 주택에 진입하지 마십시오. 출구를 잃기 쉽습니다.\n\n【이동 경로】 가로등 연결선을 따라 이동하는 것이 가장 안전한 경로입니다.`},
+
+{id:"L10",num:10,name:"The Field of Wheat — 밀밭",danger:"Class 1",env:"개방형, 자연 환경",entity_rate:"낮음",resources:"아몬드 워터, 야생 과일",
+desc:`레벨 10은 백룸에서 드물게 안전한 자연 환경 레벨입니다. 끝없이 이어지는 황금빛 밀밭이 부드러운 바람에 흔들리며, 하늘은 영원히 황혼의 오렌지빛을 유지합니다. 태양은 없지만 균등하게 분산된 따뜻한 빛이 공간을 가득 채웁니다.\n\n이 레벨에서는 방랑자들이 처음으로 실제 자연 소리(바람, 새소리, 풀벌레)를 들을 수 있어, 심리적 안정에 크게 기여합니다. 밀밭 사이에는 아몬드 나무와 야생 베리가 자라며, 지표면 아래에서 깨끗한 지하수가 나오는 우물도 발견됩니다.\n\n위험 요소가 없는 것은 아닙니다. 밀밭 깊은 곳에서는 방랑자들이 갑자기 수 km를 이동한 것을 발견하는 '공간 도약 현상'이 보고되며, 밀밭 속에서는 방향 감각이 완전히 사라질 수 있습니다. 또한 이 레벨에서 오래 체류하면 지나치게 평화로운 환경이 주는 무기력감에 탈출 의지가 약해진다는 보고도 있습니다.`,
+geo:`[개방 밀밭] 레벨 대부분을 차지하는 광활한 밀밭. 하늘을 기준으로 방향을 잡아야 합니다.\n\n[아몬드 나무 군락] 아몬드 워터의 원료인 아몬드가 열리는 나무들이 군락을 이루는 구역.\n\n[우물 지대] 깨끗한 지하수가 나오는 석조 우물이 산재한 구역. 생존에 매우 중요합니다.\n\n[폐허 농가] 밀밭 사이에 산재한 오래된 농가 건물. 물자 수집 가능 지점.`,
+survival:`【방향 유지】 밀밭 내에서는 태양 대신 바람 방향과 별자리(황혼 하늘에 희미하게 보임)를 이용해 방향을 잡으십시오.\n\n【무기력 경보】 '이곳에 계속 있어도 괜찮겠다'는 생각이 든다면 즉시 이동을 시작하십시오. 레벨 10의 평화는 방랑자를 가두는 심리적 함정입니다.\n\n【물 확보】 우물에서 충분한 물을 확보하십시오. 레벨 10의 물은 가장 안전한 식수입니다.`},
+
+{id:"L11",num:11,name:"The Promised Land — 약속의 땅",danger:"Class 0 (공인 안전 구역)",env:"완전 안전",entity_rate:"없음",resources:"풍부",
+desc:`레벨 11은 백룸에서 이론적으로 가장 안전한 레벨로 분류됩니다. 넓은 열대 낙원처럼 보이는 이 레벨에는 맑은 하늘, 따뜻한 햇살(유일하게 햇빛이 존재하는 레벨), 신선한 공기, 그리고 풍부한 식수와 식량이 있습니다. 마치 인류의 '낙원' 개념을 구현한 것 같은 환경입니다.\n\n그러나 M.E.G.의 고급 보고서는 레벨 11이 완전히 안전하지 않을 수 있다고 경고합니다. '너무 완벽한' 환경 자체가 의심스러우며, 일부 방랑자들은 레벨 11에 진입 후 이유 불명으로 다시는 나타나지 않았습니다. 현재 M.E.G.는 레벨 11을 공식 안전 구역으로 지정하면서도 심층 탐사는 제한하고 있습니다.`,
+geo:`[해변 구역] 맑은 바닷물과 모래사장이 있는 구역. 아몬드 워터가 풍부합니다.\n\n[열대 숲] 다양한 과일과 식물이 자라는 숲. 식량이 풍부하나 길을 잃기 쉽습니다.\n\n[M.E.G. 전초기지] 레벨 11의 최근 설치된 소규모 탐사 거점.`,
+survival:`【과도한 안주 금지】 레벨 11의 편안함에 너무 오래 머물지 마십시오. 탈출 목표를 잃지 않도록 팀 내에서 정기적으로 탈출 계획을 상기시키십시오.\n\n【이상 징후 보고】 레벨 11에서 완벽한 환경과 어울리지 않는 모든 이상 징후(공기의 미세한 변화, 소리 이상, 날씨 변동)를 즉시 M.E.G.에 보고하십시오.`},
+
+{id:"L37",num:37,name:"The Beach — 어두운 해변",danger:"Class 2",env:"수평선 없음, 검은 바다",entity_rate:"낮음",resources:"레어 발견",
+desc:`레벨 37은 레벨 7의 수중 공포와 레벨 10의 자연 환경이 결합된 기이한 레벨입니다. 끝없는 검은 모래 해변과 오직 어둠만 보이는 광대한 검은 바다, 그리고 영원히 일몰 직전 상태인 붉은 하늘이 특징입니다. 파도 소리는 들리지만 실제 파도는 거의 없으며, 바다는 기름처럼 잔잔합니다.\n\n검은 바다에는 무언가가 있습니다. 망원경으로 수평선 부근을 관찰한 탐사대원들은 수면 위로 거대한 실루엣이 가끔 보인다고 보고했으나, 물체가 무엇인지는 밝혀지지 않았습니다. 바다에 조명을 비추면 수면 아래에서 희미한 발광체가 움직이는 것이 보입니다.`,
+geo:`[검은 모래해변] 검은 용암 모래처럼 생긴 해변. 걷기 어렵지만 수중 위험은 없습니다.\n\n[파도 침식 동굴] 해안 절벽에 형성된 동굴. 내부에 다른 레벨 진입 포탈이 발견된 사례 있음.\n\n[검은 바다] 절대 진입 금지. 바다에서 50m 이상 이격하여 이동하십시오.`,
+survival:`【해수 음용 금지】 검은 바다의 물은 즉각적인 신경 독성을 유발합니다.\n\n【수평선 주시 금지】 수평선의 실루엣을 장시간 응시하면 강한 끌림 현상과 함께 바다를 향해 걷고 싶은 충동을 느낍니다. 이는 대형 수중 엔티티의 정신 조종 능력으로 추정됩니다.`},
+
+{id:"L94",num:94,name:"The Hive — 벌집",danger:"Class 3",env:"생물학적 위험, 유기체 벽",entity_rate:"높음",resources:"드묾",
+desc:`레벨 94는 거대한 유기 생명체의 내부 같은 공간입니다. 벽, 천장, 바닥 전체가 황갈색의 끈적한 생체 조직으로 이루어져 있으며, 전체 공간이 천천히 숨을 쉬는 것처럼 맥박치는 진동을 냅니다. 벽에서 분비되는 노란 점성 액체는 아몬드 워터와 비슷한 냄새를 내지만 접촉 시 피부 자극을 유발합니다.\n\n이 레벨에서는 군집 생활을 하는 스워머(Swarmer) 엔티티가 대규모로 서식합니다. 스워머는 개미와 유사한 행동 패턴을 보이며 개별적으로는 약하지만 집단으로 방랑자를 포위합니다.`,
+geo:`[주 통로] 비교적 넓은 생체 터널. 스워머 순찰 경로와 겹칩니다.\n\n[방 형태 공간] 레벨 내 군데군데 존재하는 넓은 공간. 스워머 여왕이 서식할 가능성.\n\n[발광 구역] 벽의 생체 조직이 청록빛으로 발광하는 구역. 상대적으로 스워머가 적습니다.`,
+survival:`【스워머 군집 탈출】 스워머 집단에 포위되면 불(라이터, 파이어 소금)을 사용해 일시적으로 쫓아내십시오.\n\n【점액 접촉 최소화】 벽의 점액이 눈이나 입에 들어가지 않도록 주의하십시오.`},
+
+{id:"L188",num:188,name:"The Void — 공허",danger:"Class 5 (이론상 생존 불가)",env:"무중력, 무한 허공",entity_rate:"불명",resources:"없음",
+desc:`레벨 188은 M.E.G. 탐사대가 실제로 진입에 성공한 기록이 거의 없는 전설적인 레벨입니다. 보고된 바에 따르면 이 레벨은 완전한 흑색의 무한 공허 공간으로, 바닥도 천장도 벽도 존재하지 않습니다. 중력이 없어 진입 즉시 무한 허공으로 부유합니다.\n\n이 레벨에서 생존한 방랑자들의 증언에 따르면, 무한한 어둠 속에서 멀리 빛나는 물체들이 보이는데 가까이 다가갈 수 없습니다. 일부는 그 빛들이 다른 레벨의 '창문'이라고 주장합니다. 생환자들은 모두 어떻게 탈출했는지 명확히 기억하지 못하며, 레벨에서 체류한 시간 인식도 왜곡되어 있습니다.`,
+geo:`[알 수 없음] 레벨 구조 자체가 존재하지 않는 것으로 보입니다.`,
+survival:`【진입 금지】 M.E.G.는 레벨 188 진입을 공식 금지하고 있습니다.\n\n【탈출 방법 불명】 이 레벨에서 탈출하는 방법은 현재까지 공식적으로 알려진 것이 없습니다.`},
+
+{id:"L999",num:999,name:"The End — 끝",danger:"Class ?",env:"불명",entity_rate:"불명",resources:"불명",
+desc:`레벨 999는 일부 방랑자들이 '백룸의 끝'이라고 믿는 전설적인 레벨입니다. 수십 년에 걸쳐 수집된 증언과 메모들은 이 레벨이 실제로 존재함을 암시하지만, 그 구조와 특성에 대해서는 증언이 완전히 엇갈립니다. 어떤 이는 텅 빈 방 하나라고 하고, 또 다른 이는 모든 레벨이 한 눈에 보이는 전망대라고 합니다.\n\n가장 많이 인용되는 증언은 이것입니다: "마침내 레벨 999에 도달했을 때, 나는 내가 처음 백룸에 진입한 현실 세계의 방과 완전히 동일한 공간에 있었다. 나는 문을 열고 나갔다. 하지만 문 밖은 내가 기억하는 세상이 아니었다."\n\nM.E.G. 상층부는 레벨 999의 존재에 대해 공식 답변을 거부하고 있으며, 이 레벨에 관한 연구 보고서는 모두 기밀 등급입니다.`,
+geo:`[알 수 없음] 레벨 진입 방법 자체가 불명.`,
+survival:`【공식 경고】 레벨 999를 목표로 삼지 마십시오. 이를 목표로 삼은 방랑자들은 레벨 5나 레벨 6 같은 극위험 구역으로 유인되는 경향이 있습니다.`}
+];
+
+// ============================================================
+// ██████  ENTITIES DATA ██████
+// ============================================================
+const ENTITIES = [
+{id:"E001",num:1,name:"Smilers — 스마일러",danger:"위험 (Hostile)",habitat:"레벨 0, 레벨 6, 암흑 전 구역",size:"불명, 2개의 빛나는 눈과 넓은 미소만 관측됨",
+desc:`스마일러는 백룸 엔티티 중 가장 잘 알려진 존재입니다. 완전한 어둠 속에서만 나타나며, 형태 전체는 완전한 흑색으로 환경과 구분이 불가능합니다. 유일하게 보이는 것은 두 개의 희고 빛나는 눈과 인간의 것보다 훨씬 넓게 찢어진 '미소' 형태의 이빨입니다.\n\n스마일러는 직접적으로 공격하지 않는 것처럼 보이나, 이는 오해입니다. 이들의 주된 사냥 방식은 공포 유발입니다. 빛이 차단되는 순간 방랑자의 공황 상태를 유발하고, 그 공황으로 인한 혼란(벽에 부딪힘, 낭떠러지 추락, 다른 엔티티 구역으로의 무작위 이동) 중에 방랑자가 스스로 사망하게 만듭니다. 빛이 켜지면 즉시 사라지며, 빛이 꺼지는 순간 다시 나타납니다.`,
+behavior:`【목격 패턴】 방랑자의 시야 가장자리에서 처음 포착됩니다. 고개를 돌리면 보이지 않지만 다시 원래 방향을 보면 더 가까이 있습니다.\n\n【접근 속도】 스마일러는 빛이 있는 동안 전혀 움직이지 않습니다. 빛이 꺼지는 순간에만 이동합니다.\n\n【다수 스마일러】 한 구역에 최대 수십 개의 미소가 동시에 보이는 사례가 보고되었습니다.`,
+countermeasure:`【최우선 대응】 네온 플루이드를 주변에 뿌려 지속적인 광원을 확보하십시오. 스마일러가 보이는 즉시 빛의 강도를 높이십시오.\n\n【절대 금지】 눈을 감거나 어두운 공간에서 잠드는 것은 절대 금지. 스마일러의 가장 큰 사냥 기회입니다.\n\n【후퇴】 빛의 방향으로 즉각 후퇴하십시오.`},
+
+{id:"E002",num:2,name:"Hounds — 하운드",danger:"위험 (Hostile)",habitat:"레벨 9, 레벨 0 일부",size:"대형견 수준, 약 80cm 체고",
+desc:`하운드는 겉모습이 일반 개와 매우 유사하여 초보 방랑자들이 가장 많이 희생되는 엔티티입니다. 색은 짙은 회색에서 검은색이며, 눈이 없음에도 불구하고 빠르고 정확하게 이동합니다. 냄새와 청각을 이용해 사냥하며, 특히 방랑자의 체열을 감지합니다.\n\n하운드는 추격 시 인간이 달릴 수 있는 최고 속도의 2~3배로 이동합니다. 그러나 방향 전환 능력이 제한되어 직선 추격에서는 매우 빠르지만 복잡한 장애물 구간에서는 속도가 떨어집니다.`,
+behavior:`【추적 방식】 냄새 감지 → 40m 이내 접근 후 청각 추적으로 전환 → 10m 이내 체열 감지로 완전 추적\n\n【공격 방식】 도약 후 상체를 노리는 방식으로 쓰러뜨린 뒤 급소를 공격\n\n【집단 사냥】 단독으로 행동하지만 특정 신호음(높은 피치의 짧은 울음)으로 동료를 소집합니다.`,
+countermeasure:`【냄새 차단】 아몬드 워터를 몸에 바르면 하운드의 후각 감지를 일시적으로 방해합니다.\n\n【체열 차단】 레벨 2~3의 냉각 구역에서 획득 가능한 냉각 겔을 피부에 바르면 체열 감지를 방해합니다.\n\n【방향 전환 활용】 하운드에게 추격당할 때는 복잡한 구조물 사이를 지그재그로 이동하여 속도 이점을 무력화하십시오.`},
+
+{id:"E003",num:3,name:"Skin-Stealers — 피부 도둑",danger:"최상급 위험 (Inhuman)",habitat:"레벨 0~3, 특히 어두운 복도",size:"가변 (인간 크기 모방)",
+desc:`스킨 스틸러는 백룸에서 가장 위험한 엔티티 중 하나입니다. 이들의 핵심 능력은 인간의 외모를 완벽하게 복제하는 것입니다. 피부 도둑은 먹이를 섭취한 후 해당 인간의 외모, 목소리, 기억 일부를 흡수합니다. 이를 통해 방랑자 집단에 침투하여 신뢰를 얻고 다음 먹잇감을 사냥합니다.\n\n피부 도둑은 실제 인간과 구별하기 매우 어렵습니다. 그러나 세밀하게 관찰하면 차이점이 있습니다: 눈을 깜빡이는 빈도가 비정상적으로 낮거나 높습니다. 감정 표현이 약간 늦게 나타납니다. 그리고 새벽 3~5시 사이에 무의식적으로 이상 행동을 보입니다.`,
+behavior:`【위장 능력】 완벽에 가까운 인간 외모 복제. 특히 평소 알고 지내던 동료를 모방하는 경우 거의 구분 불가.\n\n【약점】 몸에서 특유의 퀴퀴한 냄새가 납니다. 아몬드 워터에 매우 민감하게 반응합니다.\n\n【공격 방식】 신뢰를 얻은 후 방랑자가 혼자 있거나 잠든 순간을 노립니다.`,
+countermeasure:`【피부 도둑 테스트】 새로 합류한 방랑자에게는 반드시 아몬드 워터를 손에 발라보게 하십시오. 스킨 스틸러는 아몬드 워터에 타는 듯한 고통을 받아 즉각 반응합니다.\n\n【팀 보안 프로토콜】 팀 내에서 매일 암구호를 변경하고, 새벽 3~5시 당직자를 배치하십시오.\n\n【의심 행동 목록】 눈 깜빡임 이상, 감정 지연 반응, 특정 기억에 대한 대답 회피, 식사 거부.`},
+
+{id:"E004",num:4,name:"Facelings — 페이스링",danger:"중립 (Neutral)",habitat:"레벨 0~5 전반",size:"성인 인간과 유사",
+desc:`페이스링은 백룸에서 가장 많이 목격되는 엔티티입니다. 이름에서 알 수 있듯 얼굴이 없는, 즉 눈·코·입이 없는 매끄러운 피부의 인형 같은 존재입니다. 체형은 인간과 유사하나 움직임이 어색하고 기계적입니다.\n\n페이스링은 원칙적으로 방랑자를 무시합니다. 정면으로 관찰해도 반응하지 않으며, 일정한 경로를 따라 이동하다가 멈추고 다시 이동하는 패턴을 반복합니다. 그러나 방랑자가 이들의 이동 경로를 방해하거나 직접 접촉을 시도하면 공격적으로 변합니다.`,
+behavior:`【기본 행동】 정해진 경로를 반복 이동하거나 벽 앞에 서서 가만히 있습니다.\n\n【자극 반응】 직접 접촉, 이동 경로 방해, 큰 소리에 반응하여 적대적으로 변합니다.\n\n【군집 행동】 한 페이스링이 공격적으로 변하면 주변의 모든 페이스링이 동시에 반응합니다.`,
+countermeasure:`【무시 정책】 페이스링은 완전히 무시하는 것이 최선입니다. 눈을 맞추거나 반응을 유도하지 마십시오.\n\n【경로 우선권】 페이스링의 이동 경로를 방해하지 마십시오. 이들이 지나갈 때까지 기다리십시오.\n\n【접근 금지】 절대 페이스링에게 먼저 다가가지 마십시오.`},
+
+{id:"E005",num:5,name:"Party Goers — 파티고어",danger:"위험 (Hostile)",habitat:"레벨 5 (주 서식지), 레벨 0~2 출몰",size:"약 2.5m, 변형 가능",
+desc:`파티고어는 레벨 5의 '공포의 호텔'을 대표하는 엔티티입니다. 인간 골격이 완전히 비틀리고 변형된 형태로, 형형색색의 파티 복장(고깔모자, 크라커, 풍선)을 착용하고 있습니다. 특유의 날카롭고 높은 웃음소리와 함께 등장합니다.\n\n파티고어는 단순한 포식자가 아닙니다. 이들은 방랑자를 '파티'에 참여시키려는 강박적인 욕구를 보이며, 파티의 '불청객'(파티를 거부하거나 탈출하려는 방랑자)을 극도로 공격적으로 취급합니다. 특이하게도 파티 분위기에 동참하면 일시적으로 공격성이 낮아지는 경우가 보고되었으나, 이를 역이용하는 것은 극도로 위험합니다.`,
+behavior:`【출몰 패턴】 웃음소리가 먼저 들립니다. 웃음소리가 들리면 이미 파티고어가 40m 이내에 있습니다.\n\n【추격 속도】 직선 추격 시 매우 빠르며, 비틀린 관절로 벽과 천장도 이동합니다.\n\n【분노 유발 요소】 레벨 5 내에서 빠르게 뛰거나, 파티 장식물을 건드리거나, 비명을 지르면 파티고어가 집결합니다.`,
+countermeasure:`【가장 조용히 이동】 파티고어 활동 구역에서는 속삭임과 수신호만 사용하십시오.\n\n【웃음소리 방향 파악】 웃음소리가 들리면 즉시 방향을 파악하고 반대 방향으로 이동하십시오.\n\n【객실 은신】 레벨 5의 객실 내에서는 문을 잠그고 가구로 바리케이드를 치면 임시 안전 구역을 만들 수 있습니다. 단, 파티고어는 자동으로 문을 열 수 있으므로 영구 안전지대는 아닙니다.`},
+
+{id:"E006",num:6,name:"The Bacteria — 박테리아",danger:"위험",habitat:"레벨 0, 특히 벽지 습윤 구역",size:"보통 1cm 이하 군집체",
+desc:`박테리아는 육안으로는 일반적인 곰팡이나 균류처럼 보이나, 실제로는 지능적인 집단 행동을 하는 엔티티입니다. 주로 축축한 벽지나 카펫에 서식하며, 황갈색 또는 검은색 반점 형태로 나타납니다. 직접 접촉 시 피부에 침투하여 신경계를 서서히 공격합니다.\n\n박테리아에 감염된 방랑자는 처음에는 가려움증과 피부 발진을 경험합니다. 이후 48~72시간 내에 판단력 저하, 현실 인식 왜곡, 그리고 최종적으로 완전한 공황 상태에 빠집니다. 감염 중기 이후에는 치료가 극히 어렵습니다.`,
+behavior:`【전파 방식】 직접 피부 접촉, 감염된 물체 접촉, 박테리아 포자 흡입\n\n【초기 감염 징후】 노출 후 6~12시간 내에 특정 부위 가려움과 발적\n\n【집단 행동】 박테리아 군집은 열원(체온)을 향해 집중적으로 이동합니다.`,
+countermeasure:`【방어 장비】 두꺼운 장갑, 마스크, 장화를 착용하십시오.\n\n【초기 치료】 아몬드 워터로 감염 부위를 즉시 씻어내면 초기 감염을 70% 확률로 차단할 수 있습니다.\n\n【감염자 격리】 팀 내 감염자가 발생하면 즉시 격리하고 M.E.G. 의료진에게 연락하십시오.`},
+
+{id:"E007",num:7,name:"Windows — 윈도우",danger:"중립",habitat:"레벨 2, 레벨 3",size:"약 1.5m, 반투명체",
+desc:`윈도우는 반투명한 인간형 실루엣을 가진 중립 엔티티입니다. 레벨 2와 3의 배관 및 기계 구조물 사이에서 주로 목격되며, 방랑자를 직접 공격하지 않습니다. 이름의 유래는 이들의 반투명한 신체가 유리창처럼 보이기 때문입니다.\n\n윈도우는 방랑자에게 단서를 주는 특이한 행동을 보입니다. 특정 방향을 반복적으로 응시하거나, 손가락으로 방향을 가리키는 행동이 관찰되었습니다. 이 단서를 따라간 방랑자들이 출구를 발견하는 경우가 있어 'Window의 안내'는 백룸 생존자들 사이에서 중요한 전술로 알려져 있습니다. 그러나 항상 신뢰할 수 있는 것은 아니며, 일부 경우에는 더 위험한 구역으로 유도되었다는 보고도 있습니다.`,
+behavior:`【관찰 패턴】 방랑자를 멀리서 조용히 관찰합니다.\n\n【안내 행동】 특정 방향을 가리키거나 특정 경로로 이동하는 행동을 반복합니다.\n\n【자극 반응】 직접 접촉 시도 시 즉시 소멸합니다.`,
+countermeasure:`【신중한 관찰】 윈도우의 행동을 주의 깊게 관찰하되, 무조건 따르지는 마십시오.\n\n【팀 확인】 윈도우가 특정 방향을 가리킨다면 팀 전원이 동의한 후 탐색 요원 1명이 먼저 확인하십시오.\n\n【접촉 금지】 윈도우에게 접근하거나 접촉하려 하지 마십시오. 소멸 후 재출현 없음.`},
+
+{id:"E008",num:8,name:"The Clumps — 클럼프",danger:"위험",habitat:"레벨 3, 전기 시설 구역",size:"불규칙, 3~10kg 군집",
+desc:`클럼프는 여러 유기 물질이 전기에 의해 결합된 것처럼 보이는 덩어리형 엔티티입니다. 이들은 전기 장비와 결합하거나 그 내부에 숨는 특성이 있어, 레벨 3에서 방랑자들이 전자기기를 사용할 때 갑작스러운 공격을 받는 주 원인입니다.\n\n클럼프의 신체에는 전기가 흐르며, 직접 접촉 시 감전으로 인한 부상을 입힐 수 있습니다. 이들은 전기 에너지를 흡수하여 성장하며, 방랑자가 사용하는 배터리 장비의 에너지를 원격으로 흡수하는 능력도 있습니다.`,
+behavior:`【위장 능력】 전기 장비나 배전반과 동일한 색과 형태로 위장합니다.\n\n【전기 방출】 자극받으면 강력한 전기 충격을 방출합니다.\n\n【에너지 흡수】 방랑자의 배터리 장비를 30~50m 거리에서 방전시킵니다.`,
+countermeasure:`【절연 장비】 고무 장갑과 절연 신발을 착용하십시오.\n\n【장비 격리】 배터리 장비를 금속 케이스에 넣으면 에너지 흡수를 일부 차단합니다.\n\n【물 약점】 클럼프는 물에 취약합니다. 아몬드 워터나 일반 물을 분사하면 일시적으로 마비시킬 수 있습니다.`},
+
+{id:"E009",num:9,name:"Wretches — 렛치",danger:"위험 (Hostile)",habitat:"레벨 1, 레벨 2",size:"인간 이상, 약 2m",
+desc:`렛치는 레벨 1과 2에 가장 많이 서식하는 대형 포식자 엔티티입니다. 인간과 유사한 체형이나 심하게 왜곡되어 있으며, 팔다리가 비정상적으로 길고 관절이 반대 방향으로 구부러집니다. 피부는 콘크리트처럼 거칠고 회색이며, 눈은 없지만 적외선 시야로 사냥합니다.\n\n렛치는 매복 전술을 사용합니다. 창고 박스 사이, 어두운 복도 구석에 숨어 방랑자가 접근할 때까지 기다렸다가 기습합니다. 이들의 힘은 성인 남성의 5~7배에 달하며, 긴 팔로 방랑자를 멀리서 잡아당길 수 있습니다.`,
+behavior:`【잠복 전술】 저소음 환경에서 정적 잠복. 체온 감지로 방랑자 위치 파악.\n\n【공격 방식】 기습 → 팔로 포박 → 이동 불능화 후 처리\n\n【약점】 강한 빛에 일시적으로 시각(적외선 포함) 기능이 교란됩니다.`,
+countermeasure:`【강광 노출】 강력한 손전등이나 네온 플루이드를 렛치의 신체에 직접 비추면 일시적으로 무력화됩니다.\n\n【소리로 탐지】 렛치가 숨어 있는 구역에서는 구조물이 미세하게 삐걱이는 소리를 냅니다. 이 소리에 주의를 기울이십시오.\n\n【집단 이동 안전】 3명 이상 팀이 전후방을 경계하며 이동하면 렛치의 기습 성공률이 80% 이상 감소합니다.`},
+
+{id:"E010",num:10,name:"The Entity — 더 엔티티 (공식 미분류)",danger:"측정 불가",habitat:"레벨 999, 최심부 레벨",size:"미지",
+desc:`더 엔티티는 M.E.G. 기밀 등급 파일에만 언급되는 존재로, 일반 탐사대원에게는 정보가 공개되지 않습니다. 극히 소수의 방랑자들이 레벨 999에 근접했을 때 인식한 '존재감'에 대한 증언만이 존재합니다.\n\n이들 증언에 따르면, 더 엔티티는 물리적 형태를 갖지 않으며 공간 자체로서 존재합니다. 백룸의 구조 전체가 이 존재의 일부이거나, 이 존재가 백룸을 창조/유지하는 것으로 추정됩니다. M.E.G. 상층부는 이에 대한 공식 발언을 철저히 거부하고 있습니다.\n\n[이 이후의 정보는 기밀 등급으로 접근이 제한됩니다.]`,
+behavior:`[기밀]`,
+countermeasure:`[기밀] — 접근 자체를 금지합니다.`},
+
+{id:"E011",num:11,name:"Deathmoth — 데스모스",danger:"위험",habitat:"레벨 10, 레벨 11 경계",size:"날개폭 최대 1.5m",
+desc:`데스모스는 거대한 나방 형태의 엔티티입니다. 레벨 10의 밀밭에서 황혼빛을 배경으로 날아다니는 모습이 목격됩니다. 날개에는 해골이나 눈알과 유사한 무늬가 있습니다.\n\n데스모스 자체는 직접적으로 공격하지 않습니다. 그러나 이들이 특정 방향으로 집결하는 행동은 해당 구역에 위험한 다른 엔티티가 있다는 것을 의미합니다. 레벨 10에서 데스모스 떼가 한 방향으로 급격히 이동하면 반대 방향으로 즉시 이동하십시오.\n\n데스모스의 날갯짓 소리는 특유의 저주파 진동을 생성하여 장시간 노출 시 두통과 방향감각 상실을 유발합니다.`,
+behavior:`【경보 기능】 위험 엔티티 출몰 시 집결 행동\n\n【저주파 진동】 날갯짓으로 방향감각 혼란 유발\n\n【야행성】 어두운 시간대에 주로 활동`,
+countermeasure:`【데스모스 경보 활용】 데스모스가 집결하는 방향의 반대로 이동하십시오.\n\n【직접 접촉 금지】 날개 비늘에 피부가 닿으면 가려움과 함께 독성 반응이 일어납니다.`},
+
+{id:"E012",num:12,name:"Insanity — 인새니티",danger:"최상급 위험 (Inhuman)",habitat:"심층 레벨, 레벨 50 이상",size:"측정 불가",
+desc:`인새니티는 물리적 신체를 가지지 않는 순수 정신 공격 엔티티입니다. 시각으로는 존재를 감지할 수 없으며, 오직 인근 방랑자의 정신에 직접적으로 침투하여 작용합니다. 처음에는 환청과 환시로 시작해 점진적으로 방랑자의 현실 인식을 파괴합니다.\n\n인새니티의 영향을 받는 방랑자는 다음과 같은 단계를 거칩니다: (1) 존재하지 않는 소리 청취 (2) 팀원의 외모가 엔티티로 보이는 시각 왜곡 (3) 과거 트라우마의 강제 재생 (4) 완전한 현실 인식 붕괴. 최종 단계에서 방랑자는 자해하거나 동료를 공격하게 됩니다.\n\n메모리 주스(Memory Juice)가 인새니티의 영향을 일시적으로 억제하는 것으로 알려져 있습니다.`,
+behavior:`【감지 불가】 물리적으로 존재하지 않아 탐지 불가\n\n【진행성 공격】 시간이 지날수록 영향력이 강해집니다\n\n【집단 공격】 팀 내 여러 명을 동시에 공격합니다`,
+countermeasure:`【메모리 주스】 증상 발현 즉시 메모리 주스를 복용하십시오.\n\n【즉각 레벨 이동】 증상이 발현되면 현재 레벨에서 즉시 탈출하십시오.\n\n【팀원 모니터링】 정기적으로 팀원들의 정신 상태를 체크하십시오.`},
+
+{id:"E013",num:13,name:"The Stalker — 스토커",danger:"위험",habitat:"레벨 4, 사무실 레벨",size:"성인 인간과 동일",
+desc:`스토커는 레벨 4에 주로 서식하며 방랑자를 매우 오랜 시간 동안 집요하게 추적합니다. 겉모습은 얼굴이 흐릿하게 뭉개진 사람처럼 보이며, 검은 정장을 입고 있습니다. 이들은 빠르게 움직이지 않으며, 항상 방랑자가 시야에서 놓칠 만한 거리에서 천천히 따라옵니다.\n\n스토커는 공격하지 않습니다. 대신 방랑자가 불안하고 지치도록 끊임없이 뒤를 따릅니다. 방랑자가 수면을 취하려 할 때 머리맡에 서 있기도 합니다. 스토커로 인한 극도의 수면 부족과 정신적 피로가 실질적인 위험 요인입니다.`,
+behavior:`【추적 패턴】 방랑자의 시야 가장자리에서 50~100m 거리 유지하며 추적\n\n【지속성】 레벨을 이동해도 계속 따라옵니다. 오직 특정 방법으로만 제거 가능\n\n【스토킹 종료 조건】 대상 방랑자가 사망하거나, 아몬드 워터로 만든 방어 원 안에 24시간 이상 머물면 관심을 잃습니다.`,
+countermeasure:`【아몬드 워터 방어 원】 잠자리 주변에 아몬드 워터를 원형으로 뿌려 임시 방어 구역을 만드십시오.\n\n【무시 전략】 스토커를 직접 쳐다보거나 언급하면 추적 강도가 높아집니다. 의식하지 않는 것이 최선입니다.\n\n【24시간 회피】 아몬드 워터 방어 원 안에서 24시간 버티면 스토커가 물러납니다.`},
+
+{id:"E014",num:14,name:"The Beast of Level 5 — 레벨 5의 야수",danger:"최상급 위험",habitat:"레벨 5 한정",size:"가변, 추정 10m 이상",
+desc:`레벨 5의 야수는 이 레벨에서만 목격되는 존재로, 실제 형태를 완전히 파악한 생존자가 없습니다. 목격 기록에 따르면 육중한 발걸음 소리, 천장과 벽이 흔들리는 진동, 그리고 갑자기 나타나는 거대한 그림자만이 관찰되었습니다.\n\n레벨 5의 야수는 레벨 자체의 폴터가이스트 현상과 연관이 있는 것으로 추정됩니다. 이 존재가 활동할 때마다 레벨 5의 공간 변형이 가속화됩니다. 일부 연구자들은 이 야수가 레벨 5의 관리자 또는 레벨 자체의 의지를 나타내는 현현이라고 주장합니다.`,
+behavior:`[생존자 증언 부족으로 데이터 미비]`,
+countermeasure:`【레벨 즉시 탈출】 발소리와 진동이 느껴지면 즉시 레벨 5 탈출을 최우선으로 하십시오. 이 존재와 조우한 방랑자 중 생존한 사례가 없습니다.`}
+];
+
+// ============================================================
+// ██████  ITEMS DATA ██████
+// ============================================================
+const ITEMS = [
+{id:"I001",num:1,name:"Almond Water — 아몬드 워터",rarity:"일반 (Common)",effect:"정신 안정, 기력 회복, 일부 엔티티 퇴치",
+desc:`아몬드 워터는 백룸에서 가장 중요한 생존 필수품입니다. 달콤하고 부드러운 아몬드 향을 가진 맑은 액체로, 시판 아몬드 음료와 유사하지만 성분 분석 결과 현실 세계에 존재하지 않는 유기 화합물이 다수 포함되어 있습니다.\n\n아몬드 워터의 주요 효능은 다음과 같습니다:\n- 음용 시 백룸의 정신 오염 진행을 현저히 늦춥니다\n- 레벨 0의 특정 엔티티(스마일러 등)의 표피에 닿으면 산화 반응을 일으켜 일시적으로 무력화합니다\n- 스킨 스틸러 탐지: 손에 발라 신규 합류자를 테스트하는 표준 프로토콜로 사용됩니다\n- 아몬드 워터 방어 원: 잠자리 주변에 원형으로 부으면 스토커 등 일부 엔티티의 접근을 차단합니다\n- 박테리아 감염 초기 치료제로 사용됩니다\n\n레벨 0, 레벨 10 등에서 비교적 흔히 발견되며, 자판기 형태로 레벨 내 산재해 있기도 합니다. 단, 레벨에 따라 자판기 유체가 변질되어 있을 수 있으므로 반드시 밀봉 상태를 확인하십시오.`,
+location:`레벨 0(자판기), 레벨 10(아몬드 나무), 레벨 4(M.E.G. 보급), 레벨 1(산발적 발견)`,
+caution:`변질 징후: 색이 탁하거나 냄새가 시큼해진 경우 즉시 폐기하십시오.`},
+
+{id:"I002",num:2,name:"Royal Jelly — 로열 젤리",rarity:"희귀 (Rare)",effect:"신체 능력 급격 향상, 과다 복용 시 변이 위험",
+desc:`로열 젤리는 황금빛의 점성 유체로, 극히 소량으로도 강력한 신체 능력 향상을 유발합니다. 근력, 지구력, 반사 신경이 일시적으로 정상 인간의 2~3배 수준으로 상승합니다.\n\n그러나 로열 젤리는 백룸의 가장 위험한 물질 중 하나입니다. 권장 복용량(티스푼 1/4)을 초과하면 세포 변형이 일어나기 시작합니다. 과다 복용자들은 피부 질감 변화, 관절 각도 이상, 그리고 인격 변형을 거쳐 최종적으로 인간성을 상실하고 엔티티로 변이합니다.\n\n로열 젤리로 인한 변이는 되돌릴 수 없으며, M.E.G.는 변이 진행 중인 방랑자에 대한 처리 프로토콜을 [기밀]로 분류하고 있습니다.`,
+location:`레벨 1, 레벨 3, 레벨 9 희귀 출몰. 일부 엔티티 서식지 근처에서 발견됨`,
+caution:`절대 호신 목적 외 복용 금지. 1회 최소량만 사용. 가능하면 M.E.G. 감독 하에 사용.`},
+
+{id:"I003",num:3,name:"Memory Juice — 메모리 주스",rarity:"일반 (Common)",effect:"백룸 정신 오염 억제, 기억 보존",
+desc:`메모리 주스는 짙은 보랏빛 액체로, 약간 쓴맛이 납니다. 주요 역할은 백룸의 정신 오염으로 인해 유실되어가는 현실 세계의 기억을 강제로 유지시키는 것입니다.\n\n백룸에서 오래 생활하면 현실 세계의 기억(가족, 집, 직업, 이름)이 서서히 흐릿해지는 '정체성 침식' 현상이 발생합니다. 메모리 주스를 주기적으로 복용하면 이 과정을 현저히 늦출 수 있습니다.\n\n또한 인새니티(Insanity) 엔티티의 정신 공격에 대한 일시적 방어 효과가 있으며, 환각 상태에서 복용 시 현실 인식을 일부 회복시키는 것이 확인되었습니다.`,
+location:`레벨 1, 레벨 4 사무실(서랍 내), 레벨 10(야생 식물에서 추출)`,
+caution:`과다 복용 시 반대로 과거 기억이 너무 생생해져 현재 상황 파악이 어려워지는 역효과 발생.`},
+
+{id:"I004",num:4,name:"Neon Fluid — 네온 플루이드",rarity:"희귀 (Rare)",effect:"지속 발광, 스마일러 퇴치",
+desc:`네온 플루이드는 형광 초록 또는 파란빛으로 빛나는 점성 유체입니다. 배터리나 전원 없이 스스로 발광하며, 이 발광은 레벨 6에서도 소멸하지 않는 유일한 광원입니다.\n\n네온 플루이드의 발광은 스마일러의 접근을 차단합니다. 스마일러는 빛이 있으면 완전히 움직이지 않으므로, 네온 플루이드를 소지하면 레벨 6 통과 시 가장 신뢰할 수 있는 안전을 확보할 수 있습니다.\n\n용기에서 꺼내면 약 4시간 발광을 유지합니다. 이후에도 어두운 곳에서 희미하게 빛나므로 완전히 소모되지는 않으나 스마일러 퇴치 효과는 사라집니다. 피부나 옷에 묻히면 장시간 발광 효과를 내므로 레벨 6 통과 시 신체에 직접 도포하는 것이 추천됩니다.`,
+location:`레벨 2(파이프 근처), 레벨 3(특정 배전반 내부), 레벨 4(캐비닛 발견)`,
+caution:`발광 지속 시간이 제한적이므로 레벨 6 진입 전 반드시 충분한 양을 확보할 것.`},
+
+{id:"I005",num:5,name:"Fire Salt — 파이어 소금",rarity:"일반 (Common)",effect:"폭발성 무기, 호신 도구",
+desc:`파이어 소금은 짙은 오렌지빛의 결정체입니다. 공기 중에서 안정적이지만, 물체에 던지거나 강한 마찰이 가해지면 강렬한 화염 폭발을 일으킵니다. 크기에 따라 폭발 범위가 다르며, 성냥갑 크기의 결정체 하나가 반경 1~2m의 폭발을 일으킵니다.\n\n파이어 소금의 주요 용도:\n- 스워머 군집 분산\n- 레벨 2의 검은 액체를 통한 발판 제거 (주의: 이 과정에서 독성 연기 발생)\n- 좁은 통로에서의 엔티티 저지\n- 비상 조명 목적(매우 밝은 섬광)\n\n보관 시 충격을 절대 가하지 마십시오. 특히 레벨 2의 증기 구역에서는 파이어 소금 폭발이 연쇄 폭발을 유발할 수 있으므로 사용에 극도의 주의가 필요합니다.`,
+location:`레벨 1(목재 팔레트 근처), 레벨 8(광물 구역), 레벨 9(주택 내부)`,
+caution:`밀봉 내충격 용기에만 보관. 고온 구역(레벨 2)에서 과열 주의.`},
+
+{id:"I006",num:6,name:"Liquid Pain — 리퀴드 페인",rarity:"극희귀 (Legendary)",effect:"일시적 무통 + 신체 재생, 강한 중독성",
+desc:`리퀴드 페인은 백룸에서 가장 극희귀한 물질입니다. 무색에 가까운 약한 회색빛 유체로, 복용 즉시 신체의 모든 통증을 제거하고 부상의 빠른 치유를 유도합니다. 중상 입은 방랑자가 이것을 복용 후 수 시간 내에 활동을 재개한 사례도 있습니다.\n\n그러나 리퀴드 페인은 강한 중독성을 가집니다. 2회 이상 복용부터 내성이 생기기 시작하며, 복용을 중단하면 금단 증상으로 극도의 통증이 발생합니다. 장기 복용자는 현실 세계로 귀환해도 중독 상태에서 벗어나지 못했다는 보고가 있습니다.`,
+location:`레벨 999 근방, 레벨 37 동굴 내부 극소 발견`,
+caution:`절대 비응급 상황에서 복용 금지. 반드시 1회 복용 후 M.E.G. 의료진에게 보고할 것.`}
+];
+
+// ============================================================
+// ██████  ORGANIZATIONS DATA ██████
+// ============================================================
+const ORGS = [
+{id:"O001",num:1,name:"M.E.G. — 주요 탐사대 조직",type:"방랑자 지원 조직",alignment:"인류 보호",
+desc:`M.E.G.(Major Explorer Group)는 백룸 내 가장 규모가 크고 체계적인 인류 조직입니다. 초기에는 개별 방랑자들의 자발적 모임으로 시작했으나, 현재는 수백 명의 정규 대원과 수천 명의 연계 방랑자를 보유한 거대 조직으로 성장했습니다.\n\nM.E.G.의 주요 역할:\n- 신규 방랑자 구조 및 안내\n- 레벨·엔티티 정보 수집 및 분석\n- 안전 거점(캠프) 운영 및 유지\n- 레벨 간 통신 네트워크 구축\n- 탈출 경로 연구 및 지도 제작\n\n캠프 알파(레벨 0), 캠프 베타(레벨 1), 캠프 히페리온(레벨 4)이 주요 거점입니다.\n\n그러나 M.E.G. 상층부에 대한 불신도 존재합니다. 일부 벽면 메시지와 내부 고발자들은 M.E.G. 의장단이 백룸의 심층부와 모종의 거래를 했을 가능성을 제기합니다. 이에 대해 M.E.G.는 공식 입장을 내지 않고 있습니다.`,
+join:`신규 방랑자는 캠프 알파나 캠프 히페리온에서 M.E.G. 대원에게 접촉하여 등록할 수 있습니다. 기본 교육(엔티티 식별, 물자 관리, 통신 방법)을 이수하면 정식 연계 방랑자로 인정됩니다.`},
+
+{id:"O002",num:2,name:"The Lost — 길잃은 자들",type:"방랑자 집단",alignment:"중립, 자급자족",
+desc:`더 로스트는 특정 레벨에 오랜 기간 정착한 방랑자들로 이루어진 느슨한 집단입니다. M.E.G.에 합류하거나 탈출을 목표로 하지 않고, 현재 레벨에서의 생존을 최우선으로 합니다. 레벨 4에 정착한 대형 집단이 가장 잘 알려져 있으며, 사실상 레벨 4 일부 구역을 영역화하고 있습니다.\n\n더 로스트는 방랑자들에게 물자를 교환하거나 정보를 제공하는 비공식 시장을 운영합니다. 이들의 레벨별 지식은 M.E.G. 탐사대보다 훨씬 깊은 경우가 많아, 장기 생존 전략을 학습할 수 있는 귀중한 정보원입니다.`,
+join:`더 로스트에 합류하려면 해당 레벨에 장기 정착 의사가 있어야 합니다. 탈출 목표를 포기하지 않는다면 합류를 권장하지 않습니다.`},
+
+{id:"O003",num:3,name:"The Backrooms Outcasts — 아웃캐스트",type:"적대적 방랑자 집단",alignment:"적대적, 위험",
+desc:`아웃캐스트는 백룸에서 인간성을 잃고 다른 방랑자들을 위협하는 존재들의 집단입니다. 로열 젤리 과다 복용으로 부분 변이한 방랑자, 인새니티 엔티티의 영향으로 정신이 무너진 방랑자, 혹은 절망적 상황에서 극단적 선택을 한 방랑자들이 이 집단을 구성합니다.\n\n아웃캐스트는 조직적이지 않으며 공통 목표가 없습니다. 오직 생존 자원 확보를 위해 다른 방랑자들을 강제로 약탈하거나 공격합니다. 이들 중 일부는 엔티티와 협력 관계를 형성한 것으로 보고되어 있습니다.`,
+join:`합류 불가 및 금지. 조우 시 즉각 M.E.G.에 보고하십시오.`},
+
+{id:"O004",num:4,name:"ASYNC Research Institute — ASYNC 연구소",type:"연구 기관",alignment:"중립, 지식 탐구",
+desc:`ASYNC 연구소는 백룸의 물리적·형이상학적 구조를 연구하는 소규모 학술 조직입니다. 레벨 4 내 별도 연구 구역에 위치하며, 백룸의 진동 주파수, 공간 왜곡 메커니즘, 엔티티 생태, 그리고 탈출 가능성에 관한 심층 연구를 수행합니다.\n\nASYNC의 주요 연구 성과:\n- 레벨 진동 주파수 체계 정립\n- 국소적 분자 붕괴 현상 이론 수립\n- 노클립 재진입 이론 (현실 귀환 가능성 연구)\n\nM.E.G.와 협력 관계이나 독립적입니다. ASYNC의 일부 연구자들은 M.E.G. 상층부가 백룸의 진짜 기원에 대한 정보를 은폐하고 있다고 주장합니다.`,
+join:`연구 분야 전문 지식을 가진 방랑자에 한해 연구원 신청이 가능합니다.`}
+];
+
+// ============================================================
+// ██████  BEHINDS DATA ██████
+// ============================================================
+const BEHINDS = [
+{id:"B001",num:1,name:"인류 문명의 복제 메커니즘",clearance:"기밀 A등급",
+desc:`[ASYNC 연구소 수석 연구원 레포트 AR-001-CLASSIFIED]
+
+백룸에 존재하는 대다수의 가구, 벽지, 형광등, 사무실 기기들은 왜 20세기 말과 21세기 초의 양식을 띠고 있는가? 이에 대해 ASYNC 연구소의 종신 수석 연구원 박사는 다음과 같은 가설을 남겼습니다.
+
+"백룸은 스스로 사고하는 거대한 차원적 유기체이다. 이 공간은 현실 세계에서 노클립되어 들어온 최초 인류의 지배적인 집단 무의식과 유년 시절의 기억을 복제하여 내부 공간을 형성했다."
+
+이 가설에 따르면, 방랑자들이 보는 노란 벽지와 빈 사무실은 백룸이 인간을 심리적으로 조종하기 위해 인류의 집단 기억에서 추출한 '친숙한 공포'의 공간입니다. 너무 낯설어도, 너무 위험해 보여도 방랑자는 곧바로 도망칩니다. 그러나 낯익은 사무실, 학교 복도, 창고 같은 공간은 방랑자가 무의식적으로 '이 정도면 안전하다'고 생각하게 만들어 탈출 의지를 약화시킵니다.
+
+후속 연구에서는 레벨별 환경이 실제 특정 시대의 특정 지역 건물 구조와 일치한다는 점이 밝혀졌습니다. 레벨 0은 1980년대 미국 중서부 오피스 빌딩, 레벨 4는 1990년대 대도시 오피스, 레벨 5는 1930년대 유럽 호텔 양식과 매우 높은 유사도를 보입니다. 이것이 우연인지, 아니면 백룸이 특정 시대의 기억을 선택적으로 흡수한 것인지는 여전히 연구 중입니다.
+
+[추가 기밀: 레벨 999의 환경이 각 방랑자마다 다르게 보인다는 보고가 있습니다. 이것은 백룸이 각 개인의 고유한 기억에 접근할 수 있음을 암시합니다.]`},
+
+{id:"B002",num:2,name:"M.E.G. 상층부의 타락과 은폐",clearance:"극비 S등급",
+desc:`[내부 고발자 문서 — 원본 훼손 부분 복원본]
+
+방랑자들의 구원 투수를 자처하는 최대 조직 M.E.G.의 핵심 의장단은 이미 백룸의 중심부와 소통하고 있다는 내부 고발이 있었습니다.
+
+증거 1: M.E.G. 캠프 히페리온에서 발견된 암호화 통신 기록 (해독 완료)
+- 의장단과 레벨 999 접근 경로를 아는 존재 간의 교신 기록
+- "우리는 계속 공급하겠다. 당신들은 우리를 보호하라." — 의미 불명
+
+증거 2: 탐사대 사망 패턴 분석
+- 실력 있는 탐사대원들이 유독 위험한 레벨에 단독 파견되는 사례 다수
+- M.E.G. 공식 기록에는 '사고사'로 처리
+
+증거 3: 레벨 5 연회장 벽면 혈문
+"M.E.G.가 길을 막는다 — 탈출은 없다 — 우리는 에너지다"
+
+내부 고발자 주장:
+"M.E.G. 의장단은 안전한 레벨(레벨 4)의 자원을 독점하며, 일반 방랑자들을 위험한 하위 레벨로 유도하여 탐사를 시킵니다. 탐사 도중 사망한 방랑자들의 에너지가 백룸의 구조물을 유지하는 데 사용됩니다. M.E.G. 의장단은 이 거래의 대가로 백룸 내에서 영생에 가까운 수명을 얻었습니다."
+
+[편집자 주: 이 문서의 진위를 검증할 수 없음. M.E.G.는 해당 주장을 사실 무근이라고 공식 부인함. 그러나 이 문서를 최초 발견한 탐사대원 3명은 발견 후 2주 내에 '사고'로 사망함.]`},
+
+{id:"B003",num:3,name:"최종 탈출구의 허상 — 루프 현상",clearance:"기밀 A등급",
+desc:`[ASYNC 연구 보고서 AR-103 — 차원 루프 이론]
+
+수많은 레벨을 통과하고 레벨 999에 도달했다고 믿는 방랑자들이 경험하는 '현실로 돌아가는 문' 현상에 대한 분석입니다.
+
+목격 패턴:
+레벨 999로 추정되는 구역에서 방랑자들은 반드시 자신이 살던 집과 동일한 공간을 발견합니다. 냄새, 가구 배치, 심지어 가족사진까지 완벽하게 복제되어 있습니다.
+
+초기 단계 (1~3일):
+복제된 현실에서 가족과 재회합니다. 모든 것이 정상적으로 느껴집니다. 방랑자들은 자신이 탈출에 성공했다고 확신합니다.
+
+중기 단계 (3~14일):
+주변 인물들의 얼굴 이목구비가 서서히 흐릿해집니다. 가구들이 벽속으로 서서히 파고드는 현상이 시작됩니다. 외부 세계로 나가려 해도 같은 거리가 반복됩니다.
+
+말기 단계 (14일 이후):
+공간 전체가 레벨 0의 노란 벽지와 형광등으로 서서히 전환됩니다. 방랑자는 자신이 백룸 안의 하위 레벨('가짜 현실 레벨')에 갇혀 있음을 인식합니다. 그러나 이 시점에서 탈출 경로를 찾는 것은 거의 불가능합니다.
+
+결론:
+진짜 현실 차원으로의 탈출이 가능한지는 현재까지 검증되지 않았습니다. ASYNC 연구소는 백룸 진입 시 원래 차원으로의 좌표가 영구적으로 소실된다는 이론을 지지합니다. 즉, 백룸은 단방향 문이며, 탈출구는 존재하지 않을 수 있습니다.
+
+[반론: 연구원 3명은 이 이론에 동의하지 않으며, 특정 조건 하에서 현실 귀환이 가능하다는 연구를 진행 중입니다. 이들의 연구 결과는 아직 공개되지 않았습니다.]`},
+
+{id:"B004",num:4,name:"백룸의 진짜 기원 — 차원 균열 이론",clearance:"극비 S등급",
+desc:`[ASYNC 수석 연구원 최종 보고서 — 유고 문서]
+
+이 문서는 레벨 188 탐사 도중 실종된 ASYNC 수석 연구원이 사전에 준비한 유고 문서입니다.
+
+백룸은 어떻게 만들어졌는가?
+
+이론 1 — 자연 발생설:
+우주의 물리 상수가 특정 조건을 충족할 때 자연적으로 발생하는 차원 거품(Dimensional Bubble). 백룸은 인류가 존재하기 수백만 년 전부터 존재했으며, 인류의 집단 무의식이 이 거품의 내부 환경을 변형시켰다.
+
+이론 2 — 인류 생성설:
+인류 최초의 기억, 공포, 욕망이 집합하여 생성된 집단 무의식의 물질화. 백룸의 모든 레벨은 인류 심층 심리의 상징이다. (레벨 0 = 원초적 공허감, 레벨 5 = 죽음의 파티/죽음 앞의 방종, 레벨 10 = 잃어버린 낙원 등)
+
+이론 3 — 적대적 존재 창조설:
+[기밀] 레벨 999의 더 엔티티(The Entity)가 의도적으로 창조한 포획 구조물. 목적: 인류 에너지 수확. 이 이론이 맞다면 백룸에는 설계된 출구가 없다.
+
+개인적 결론:
+나는 20년간 이 공간을 연구했다. 나의 결론은 세 이론 모두 부분적으로 옳다는 것이다. 백룸은 처음에는 자연 발생한 차원 거품이었다. 여기에 인류의 집단 무의식이 내부 환경을 입혔다. 그리고 지금은 그 안에서 무언가가 깨어났다. 그것이 백룸을 통제하고 있다. 그것은 우리가 탈출을 포기하기를 원한다.
+
+이 문서를 읽는 당신에게: 절대 희망을 포기하지 마십시오. 나는 탈출이 가능하다고 믿는다. 방법은—
+
+[문서 이후 내용 없음. 연구원 실종.]`},
+
+{id:"B005",num:5,name:"노클립 현상의 과학적 분석",clearance:"기밀 A등급",
+desc:`[ASYNC 연구 보고서 AR-007 — 노클립 메커니즘]
+
+백룸 진입의 유일한 방법인 노클립(Noclip)에 대한 과학적 분석입니다.
+
+노클립 정의:
+물리적 공간에서 분자 간 결합력이 특정 조건 하에 일시적으로 저하되어, 방랑자가 고체 물질을 통과하게 되는 현상.
+
+발생 조건 (연구 기록 기반):
+- 극도의 스트레스 또는 공포 상태 (아드레날린 과다 분비)
+- 특정 주파수(0.0Hz 기저 진동)의 공간 내 위치
+- 노클립 가능 구역은 세계 전역에 무작위로 존재
+- 야간 (특히 오전 2~4시) 발생 빈도 높음
+
+발생 위치 패턴:
+- 오래된 건물 벽면 (특히 콘크리트+벽지 조합)
+- 지하 공간 (지하철역, 창고, 주차장)
+- 수영장 바닥
+- 특정 패턴의 타일 바닥
+
+역방향 노클립 (탈출 가능성):
+레벨 내 특정 구역에서 역방향 노클립이 일어난다는 기록이 있습니다. 조건은 순방향 노클립과 유사하나, 방랑자가 현실 세계의 구체적인 장소를 강하게 상상하면서 특정 벽면에 접촉하는 것이 반복적으로 보고되었습니다. 현재까지 공식 검증된 역방향 노클립 사례는 0건이나, 비공식 증언은 23건입니다.
+
+[편집자 주: 역방향 노클립을 시도하다가 더 깊은 레벨로 이동한 사례가 역으로 탈출한 사례보다 훨씬 많습니다. 충분한 정보 없이 역방향 노클립을 시도하지 마십시오.]`}
+];
+
+// ============================================================
+// ██████  APP STATE ██████
+// ============================================================
+let currentTab = 'levels';
+let currentItem = null;
+
+function getData() {
+  if(currentTab==='levels') return LEVELS;
+  if(currentTab==='entities') return ENTITIES;
+  if(currentTab==='items') return ITEMS;
+  if(currentTab==='orgs') return ORGS;
+  if(currentTab==='behinds') return BEHINDS;
+  return [];
+}
+
+function getLabel(item) {
+  if(currentTab==='levels') return `Lv.${item.num}`;
+  if(currentTab==='entities') return `E-${String(item.num).padStart(3,'0')}`;
+  if(currentTab==='items') return `I-${String(item.num).padStart(3,'0')}`;
+  if(currentTab==='orgs') return `ORG`;
+  if(currentTab==='behinds') return `B-${String(item.num).padStart(3,'0')}`;
+  return '#';
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.nav-tab').forEach((b,i)=>{
+    const tabs=['levels','entities','items','orgs','behinds'];
+    b.classList.toggle('active', tabs[i]===tab);
+  });
+  document.getElementById('searchInput').value='';
+  renderList(getData());
+  showWelcome();
+}
+
+function renderList(data) {
+  const list = document.getElementById('sidebarList');
+  const count = document.getElementById('sidebarCount');
+  count.textContent = `— ${data.length}개 항목`;
+  list.innerHTML = data.map((item,i)=>`
+    <div class="sidebar-item ${currentItem===item.id?'active':''}" onclick="showEntry('${item.id}')">
+      <span class="item-num">${getLabel(item)}</span>
+      <span class="item-name">${item.name}</span>
+    </div>`).join('');
+}
+
+function filterList() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const filtered = getData().filter(item=>item.name.toLowerCase().includes(q)||(item.id+'').toLowerCase().includes(q));
+  renderList(filtered);
+}
+
+function showWelcome() {
+  currentItem = null;
+  document.getElementById('welcomeScreen').style.display='flex';
+  document.getElementById('entryView').style.display='none';
+  renderList(getData());
+}
+
+function dangerTag(d) {
+  if(!d) return '';
+  const dl = d.toLowerCase();
+  if(dl.includes('class 0')||dl.includes('safe')||dl.includes('안전')) return 'tag-safe';
+  if(dl.includes('class 1')||dl.includes('warn')||dl.includes('neutral')||dl.includes('중립')) return 'tag-warn';
+  if(dl.includes('class 2')||dl.includes('hostile')||dl.includes('위험')) return 'tag-danger';
+  if(dl.includes('class 3')||dl.includes('extreme')) return 'tag-extreme';
+  if(dl.includes('class 4')||dl.includes('class 5')||dl.includes('inhuman')||dl.includes('최상급')) return 'tag-death';
+  if(dl.includes('불가능')||dl.includes('측정 불가')||dl.includes('impossible')) return 'tag-impossible';
+  return 'tag-default';
+}
+
+function nl(t) { return (t||'').replace(/\n/g,'<br>'); }
+
+function showEntry(id) {
+  currentItem = id;
+  document.getElementById('welcomeScreen').style.display='none';
+  document.getElementById('entryView').style.display='block';
+  document.querySelectorAll('.sidebar-item').forEach(el=>{
+    const onclick = el.getAttribute('onclick');
+    el.classList.toggle('active', onclick&&onclick.includes(`'${id}'`));
+  });
+
+  const all = [...LEVELS,...ENTITIES,...ITEMS,...ORGS,...BEHINDS];
+  const item = all.find(x=>x.id===id);
+  if(!item){return;}
+
+  let html = `<div class="entry-card">`;
+
+  if(currentTab==='levels') {
+    html += `<div class="entry-header">
+      <div class="entry-id">LEVEL ARCHIVE — ${item.id}</div>
+      <div class="entry-title">Level ${item.num}: ${item.name}</div>
+      <div class="entry-tags">
+        <span class="tag ${dangerTag(item.danger)}">${item.danger}</span>
+        <span class="tag tag-default">${item.env}</span>
+        <span class="tag tag-default">엔티티율: ${item.entity_rate}</span>
+      </div></div>
+    <div class="entry-section"><div class="entry-section-head">▸ 발견 자원</div>
+    <div class="entry-section-body">${item.resources}</div></div>
+    <div class="entry-section"><div class="entry-section-head">▸ 레벨 상세 서술</div>
+    <div class="entry-section-body">${nl(item.desc)}</div></div>
+    <div class="entry-section"><div class="entry-section-head">▸ 지리적 구역 분석</div>
+    <div class="entry-section-body">${nl(item.geo)}</div></div>
+    <div class="entry-section"><div class="entry-section-head">▸ 생존 전략 프로토콜</div>
+    <div class="entry-section-body">${nl(item.survival)}</div></div>`;
+  }
+  else if(currentTab==='entities') {
+    html += `<div class="entry-header">
+      <div class="entry-id">ENTITY DATABASE — ${item.id}</div>
+      <div class="entry-title">Entity ${item.num}: ${item.name}</div>
+      <div class="entry-tags">
+        <span class="tag ${dangerTag(item.danger)}">${item.danger}</span>
+        <span class="tag tag-default">${item.habitat}</span>
+        <span class="tag tag-default">크기: ${item.size}</span>
+      </div></div>
+    <div class="entry-section"><div class="entry-section-head">▸ 생태 정보 및 특성</div>
+    <div class="entry-section-body">${nl(item.desc)}</div></div>
+    <div class="entry-section"><div class="entry-section-head">▸ 행동 양식 분석</div>
+    <div class="entry-section-body">${nl(item.behavior)}</div></div>
+    <div class="entry-section"><div class="entry-section-head">▸ 전술적 대책 가이드</div>
+    <div class="entry-section-body">${nl(item.countermeasure)}</div></div>`;
+  }
+  else if(currentTab==='items') {
+    html += `<div class="entry-header">
+      <div class="entry-id">ITEM ARCHIVE — ${item.id}</div>
+      <div class="entry-title">${item.name}</div>
+      <div class="entry-tags">
+        <span class="tag tag-default">${item.rarity}</span>
+      </div></div>
+    <div class="entry-section"><div class="entry-section-head">▸ 주요 효능</div>
+    <div class="entry-section-body">${item.effect}</div></div>
+    <div class="entry-section"><div class="entry-section-head">▸ 상세 설명</div>
+    <div class="entry-section-body">${nl(item.desc)}</div></div>
+    <div class="entry-section"><div class="entry-section-head">▸ 주요 발견 위치</div>
+    <div class="entry-section-body">${item.location}</div></div>
+    <div class="entry-section"><div class="entry-section-head">▸ 취급 주의사항</div>
+    <div class="entry-section-body"><span class="danger-text">${item.caution}</span></div></div>`;
+  }
+  else if(currentTab==='orgs') {
+    html += `<div class="entry-header">
+      <div class="entry-id">ORGANIZATION — ${item.id}</div>
+      <div class="entry-title">${item.name}</div>
+      <div class="entry-tags">
+        <span class="tag tag-default">${item.type}</span>
+        <span class="tag tag-warn">${item.alignment}</span>
+      </div></div>
+    <div class="entry-section"><div class="entry-section-head">▸ 조직 개요</div>
+    <div class="entry-section-body">${nl(item.desc)}</div></div>
+    <div class="entry-section"><div class="entry-section-head">▸ 합류 방법</div>
+    <div class="entry-section-body">${nl(item.join)}</div></div>`;
+  }
+  else if(currentTab==='behinds') {
+    html += `<div class="entry-header">
+      <div class="entry-id">CLASSIFIED FILE — ${item.id}</div>
+      <div class="classified-stamp">⚠ 기밀 ⚠</div>
+      <div class="entry-title">${item.name}</div>
+      <div class="entry-tags">
+        <span class="tag tag-death">${item.clearance}</span>
+      </div></div>
+    <div class="entry-section"><div class="entry-section-head">▸ 기밀 내용</div>
+    <div class="entry-section-body">${nl(item.desc)}</div></div>`;
+  }
+
+  html += `</div>`;
+  const ev = document.getElementById('entryView');
+  ev.innerHTML = html;
+  ev.scrollTop = 0;
+}
+
+// Init
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('statLevels').textContent = LEVELS.length;
+  document.getElementById('statEntities').textContent = ENTITIES.length;
+  document.getElementById('statItems').textContent = ITEMS.length;
+  document.getElementById('statOrgs').textContent = ORGS.length;
+  document.getElementById('statBehinds').textContent = BEHINDS.length;
+  renderList(LEVELS);
+});
+</script>
+</body>
+</html>
+HTMLEOF
+echo "Done: $(wc -c < /mnt/user-data/outputs/backrooms.html) bytes"
