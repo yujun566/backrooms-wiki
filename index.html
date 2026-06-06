@@ -1,0 +1,2198 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>백룸 대백과사전 — THE BACKROOMS ARCHIVE</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Special+Elite&display=swap');
+
+:root {
+  --bg: #1a1810;
+  --bg2: #211e14;
+  --yellow: #ded5b8;
+  --yellow-dim: #a89f85;
+  --yellow-dark: #7a7262;
+  --green: #8fbc4a;
+  --green-dim: #5a7a30;
+  --red: #c0392b;
+  --orange: #d4741a;
+  --border: #3a3520;
+  --glow: rgba(222,213,184,0.08);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--yellow);
+  font-family: 'Share Tech Mono', 'Courier New', monospace;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* CRT overlay */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.08) 2px,
+    rgba(0,0,0,0.08) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Vignette */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.7) 100%);
+  pointer-events: none;
+  z-index: 9998;
+}
+
+@keyframes flicker {
+  0%,100% { opacity: 1; }
+  92% { opacity: 1; }
+  93% { opacity: 0.85; }
+  94% { opacity: 1; }
+  96% { opacity: 0.9; }
+  97% { opacity: 1; }
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+@keyframes pulse-glow {
+  0%,100% { text-shadow: 0 0 8px rgba(222,213,184,0.4); }
+  50% { text-shadow: 0 0 16px rgba(222,213,184,0.8), 0 0 30px rgba(222,213,184,0.3); }
+}
+
+@keyframes blink {
+  0%,49% { opacity: 1; }
+  50%,100% { opacity: 0; }
+}
+
+@keyframes static-noise {
+  0%   { background-position: 0 0; }
+  10%  { background-position: -5% -5%; }
+  20%  { background-position: -10% 5%; }
+  30%  { background-position: 5% -10%; }
+  40%  { background-position: -5% 15%; }
+  50%  { background-position: -10% 5%; }
+  60%  { background-position: 15% 0; }
+  70%  { background-position: 0 10%; }
+  80%  { background-position: -15% 0; }
+  90%  { background-position: 10% 5%; }
+  100% { background-position: 5% 0; }
+}
+
+.flicker { animation: flicker 8s infinite; }
+
+.scan-line {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(transparent, rgba(222,213,184,0.05), transparent);
+  animation: scanline 6s linear infinite;
+  pointer-events: none;
+  z-index: 9997;
+}
+
+/* ===== HEADER ===== */
+header {
+  text-align: center;
+  padding: 40px 20px 30px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  background: linear-gradient(180deg, rgba(20,18,10,0.95) 0%, transparent 100%);
+}
+
+.header-top-bar {
+  font-size: 11px;
+  color: var(--yellow-dark);
+  letter-spacing: 4px;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+
+.site-title {
+  font-family: 'VT323', monospace;
+  font-size: clamp(36px, 8vw, 72px);
+  color: var(--yellow);
+  letter-spacing: 6px;
+  animation: pulse-glow 4s ease-in-out infinite;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.site-subtitle {
+  font-size: clamp(10px, 2.5vw, 13px);
+  color: var(--yellow-dark);
+  letter-spacing: 3px;
+  margin-top: 10px;
+  text-transform: uppercase;
+}
+
+.header-divider {
+  margin: 20px auto;
+  max-width: 600px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--yellow-dark), transparent);
+}
+
+.header-meta {
+  font-size: 11px;
+  color: var(--yellow-dark);
+  letter-spacing: 2px;
+}
+
+.cursor-blink {
+  display: inline-block;
+  animation: blink 1s step-end infinite;
+  color: var(--yellow);
+}
+
+/* ===== WARNING BOX ===== */
+.warning-box {
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 14px 20px;
+  border: 1px solid var(--red);
+  background: rgba(192,57,43,0.08);
+  font-size: 11px;
+  color: #e07070;
+  letter-spacing: 1px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* ===== NAV ===== */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(20,18,10,0.97);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(4px);
+}
+
+.nav-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+}
+
+.nav-btn {
+  background: none;
+  border: none;
+  border-right: 1px solid var(--border);
+  color: var(--yellow-dark);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(10px, 2vw, 13px);
+  letter-spacing: 2px;
+  padding: 14px 18px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  position: relative;
+  white-space: nowrap;
+}
+
+.nav-btn:first-child { border-left: none; }
+
+.nav-btn:hover, .nav-btn.active {
+  color: var(--yellow);
+  background: rgba(222,213,184,0.06);
+}
+
+.nav-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--yellow);
+}
+
+/* ===== MAIN LAYOUT ===== */
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px 16px 60px;
+}
+
+/* ===== SECTION PANELS ===== */
+.section-panel {
+  display: none;
+}
+.section-panel.active {
+  display: block;
+}
+
+.section-header {
+  padding: 20px 0 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+
+.section-header h2 {
+  font-family: 'VT323', monospace;
+  font-size: clamp(22px, 5vw, 36px);
+  color: var(--yellow);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+.section-header p {
+  font-size: 11px;
+  color: var(--yellow-dark);
+  margin-top: 6px;
+  letter-spacing: 1px;
+  line-height: 1.6;
+}
+
+/* ===== FILTER BUTTONS ===== */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.filter-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--yellow-dark);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+
+.filter-btn:hover, .filter-btn.active {
+  border-color: var(--yellow-dark);
+  color: var(--yellow);
+  background: rgba(222,213,184,0.05);
+}
+
+/* ===== CARD GRID ===== */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.card {
+  border: 1px solid var(--border);
+  background: var(--bg2);
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(222,213,184,0.2), transparent);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.card:hover {
+  border-color: var(--yellow-dark);
+  background: rgba(222,213,184,0.04);
+  transform: translateY(-1px);
+}
+
+.card:hover::before { opacity: 1; }
+
+.card-header {
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.card-id {
+  font-family: 'VT323', monospace;
+  font-size: 22px;
+  color: var(--yellow-dark);
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.card-name {
+  font-size: 13px;
+  color: var(--yellow);
+  letter-spacing: 1px;
+  line-height: 1.3;
+  text-align: right;
+}
+
+.card-body {
+  padding: 12px 16px;
+}
+
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.tag {
+  font-size: 10px;
+  padding: 2px 7px;
+  border: 1px solid;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.tag-class0 { border-color: #5a9a5a; color: #5a9a5a; }
+.tag-class1 { border-color: #8fbc4a; color: #8fbc4a; }
+.tag-class2 { border-color: #d4a017; color: #d4a017; }
+.tag-class3 { border-color: #d4741a; color: #d4741a; }
+.tag-class4 { border-color: #c0392b; color: #c0392b; }
+.tag-class5 { border-color: #8b0000; color: #e07070; }
+.tag-neutral { border-color: #5a9a9a; color: #5a9a9a; }
+.tag-hostile { border-color: #c0392b; color: #c0392b; }
+.tag-inhuman { border-color: #8b0000; color: #e07070; }
+.tag-safe { border-color: #5a9a5a; color: #5a9a5a; }
+.tag-rare { border-color: #9b59b6; color: #c39bd3; }
+.tag-common { border-color: var(--yellow-dark); color: var(--yellow-dark); }
+
+.card-desc {
+  font-size: 11px;
+  color: var(--yellow-dim);
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ===== MODAL ===== */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.88);
+  z-index: 1000;
+  overflow-y: auto;
+  padding: 20px 16px;
+}
+
+.modal-overlay.open { display: flex; align-items: flex-start; justify-content: center; }
+
+.modal {
+  background: var(--bg2);
+  border: 1px solid var(--yellow-dark);
+  max-width: 760px;
+  width: 100%;
+  margin: auto;
+  position: relative;
+  box-shadow: 0 0 40px rgba(222,213,184,0.1);
+}
+
+.modal-topbar {
+  background: rgba(222,213,184,0.06);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: var(--yellow-dark);
+  letter-spacing: 2px;
+}
+
+.modal-close {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--yellow-dark);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 14px;
+  width: 28px; height: 28px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.modal-close:hover { border-color: var(--red); color: var(--red); }
+
+.modal-content { padding: 24px; }
+
+.modal-title-row {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-id {
+  font-family: 'VT323', monospace;
+  font-size: 42px;
+  color: var(--yellow-dark);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.modal-name {
+  font-family: 'VT323', monospace;
+  font-size: 28px;
+  color: var(--yellow);
+  letter-spacing: 2px;
+  line-height: 1.2;
+}
+
+.modal-name-en {
+  font-size: 13px;
+  color: var(--yellow-dark);
+  letter-spacing: 2px;
+  margin-top: 4px;
+}
+
+.modal-tags { margin: 12px 0; display: flex; flex-wrap: wrap; gap: 6px; }
+
+.modal-section {
+  margin-top: 20px;
+}
+
+.modal-section-title {
+  font-size: 11px;
+  color: var(--yellow-dark);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modal-section-title::before {
+  content: '▸';
+  color: var(--yellow-dark);
+}
+
+.modal-text {
+  font-size: 13px;
+  color: var(--yellow-dim);
+  line-height: 1.8;
+}
+
+.modal-text p { margin-bottom: 12px; }
+.modal-text p:last-child { margin-bottom: 0; }
+
+.modal-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.stat-item {
+  border: 1px solid var(--border);
+  padding: 10px 14px;
+  background: rgba(0,0,0,0.2);
+}
+
+.stat-label {
+  font-size: 10px;
+  color: var(--yellow-dark);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  font-size: 13px;
+  color: var(--yellow);
+}
+
+.survival-list {
+  list-style: none;
+  margin-top: 10px;
+}
+
+.survival-list li {
+  font-size: 12px;
+  color: var(--yellow-dim);
+  line-height: 1.7;
+  padding: 6px 0 6px 16px;
+  border-bottom: 1px solid rgba(58,53,32,0.5);
+  position: relative;
+}
+
+.survival-list li::before {
+  content: '⚠';
+  position: absolute;
+  left: 0;
+  color: var(--orange);
+  font-size: 10px;
+}
+
+.survival-list li:last-child { border-bottom: none; }
+
+/* ===== LORE SECTION ===== */
+.lore-block {
+  border: 1px solid var(--border);
+  background: var(--bg2);
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.lore-header {
+  padding: 16px 20px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0,0,0,0.2);
+  transition: background 0.2s;
+  user-select: none;
+}
+
+.lore-header:hover { background: rgba(222,213,184,0.04); }
+
+.lore-header-text {
+  font-family: 'VT323', monospace;
+  font-size: 22px;
+  color: var(--yellow);
+  letter-spacing: 2px;
+}
+
+.lore-arrow {
+  color: var(--yellow-dark);
+  font-size: 14px;
+  transition: transform 0.2s;
+}
+
+.lore-block.open .lore-arrow { transform: rotate(90deg); }
+
+.lore-body {
+  display: none;
+  padding: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.lore-block.open .lore-body { display: block; }
+
+.lore-body p {
+  font-size: 13px;
+  color: var(--yellow-dim);
+  line-height: 1.9;
+  margin-bottom: 14px;
+}
+
+.lore-body p:last-child { margin-bottom: 0; }
+
+/* ===== ITEMS SECTION ===== */
+.item-card {
+  border: 1px solid var(--border);
+  background: var(--bg2);
+  padding: 18px 20px;
+  margin-bottom: 12px;
+  transition: all 0.2s;
+}
+
+.item-card:hover {
+  border-color: var(--yellow-dark);
+  background: rgba(222,213,184,0.03);
+}
+
+.item-name {
+  font-family: 'VT323', monospace;
+  font-size: 26px;
+  color: var(--yellow);
+  letter-spacing: 2px;
+  margin-bottom: 6px;
+}
+
+.item-name-en {
+  font-size: 11px;
+  color: var(--yellow-dark);
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+
+.item-body {
+  font-size: 12px;
+  color: var(--yellow-dim);
+  line-height: 1.8;
+}
+
+.item-rarity {
+  display: inline-block;
+  font-size: 10px;
+  padding: 2px 8px;
+  border: 1px solid;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+/* ===== MEG SECTION ===== */
+.meg-card {
+  border: 1px solid var(--border);
+  background: var(--bg2);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.meg-title {
+  font-family: 'VT323', monospace;
+  font-size: 26px;
+  color: var(--yellow);
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
+.meg-body {
+  font-size: 12px;
+  color: var(--yellow-dim);
+  line-height: 1.9;
+}
+
+/* ===== SEARCH ===== */
+.search-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  flex: 1;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  color: var(--yellow);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  padding: 10px 14px;
+  outline: none;
+  transition: border-color 0.2s;
+  letter-spacing: 1px;
+}
+
+.search-input:focus { border-color: var(--yellow-dark); }
+.search-input::placeholder { color: var(--yellow-dark); }
+
+.search-input::-webkit-search-cancel-button { display: none; }
+
+/* ===== FOOTER ===== */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 20px;
+  text-align: center;
+  font-size: 10px;
+  color: var(--yellow-dark);
+  letter-spacing: 2px;
+  line-height: 1.8;
+}
+
+/* ===== INTRO ===== */
+.intro-panel {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 20px 0;
+}
+
+.intro-title {
+  font-family: 'VT323', monospace;
+  font-size: 32px;
+  color: var(--yellow);
+  letter-spacing: 3px;
+  margin-bottom: 20px;
+}
+
+.intro-text {
+  font-size: 13px;
+  color: var(--yellow-dim);
+  line-height: 2;
+  margin-bottom: 16px;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+  margin: 24px 0;
+}
+
+.stat-box {
+  border: 1px solid var(--border);
+  padding: 16px;
+  text-align: center;
+  background: var(--bg2);
+}
+
+.stat-box-num {
+  font-family: 'VT323', monospace;
+  font-size: 36px;
+  color: var(--yellow);
+  line-height: 1;
+}
+
+.stat-box-label {
+  font-size: 10px;
+  color: var(--yellow-dark);
+  letter-spacing: 2px;
+  margin-top: 4px;
+  text-transform: uppercase;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+  .nav-inner { gap: 0; }
+  .nav-btn { padding: 12px 10px; font-size: 10px; letter-spacing: 1px; }
+  .card-grid { grid-template-columns: 1fr; }
+  .modal-stats { grid-template-columns: 1fr 1fr; }
+  .modal-content { padding: 16px; }
+  .stat-grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* count badge */
+.count-badge {
+  display: inline-block;
+  background: rgba(222,213,184,0.1);
+  border: 1px solid var(--border);
+  font-size: 10px;
+  padding: 1px 6px;
+  margin-left: 8px;
+  color: var(--yellow-dark);
+  letter-spacing: 0;
+}
+
+.no-results {
+  text-align: center;
+  padding: 40px;
+  color: var(--yellow-dark);
+  font-size: 13px;
+  letter-spacing: 2px;
+}
+</style>
+</head>
+<body class="flicker">
+
+<div class="scan-line"></div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-top-bar">[ M.E.G. 공식 데이터베이스 — 기밀 등급: OMEGA ]</div>
+  <div class="site-title">THE BACKROOMS</div>
+  <div class="site-subtitle">백룸 대백과사전 — 무한 보존 완전 판본</div>
+  <div class="header-divider"></div>
+  <div class="header-meta">
+    SYSTEM ONLINE<span class="cursor-blink">_</span> &nbsp;|&nbsp; 레벨 데이터: 300+ &nbsp;|&nbsp; 엔티티: 250+ &nbsp;|&nbsp; 보안 등급: CLASSIFIED
+  </div>
+</header>
+
+<div class="warning-box">
+  ⚠ 경고: 이 문서는 M.E.G.(주요 탐사대) 최고 기밀 등급입니다. 허가 없는 열람은 차원 좌표 노출을 야기할 수 있습니다.
+  현실에서 노클립(Noclip)을 시도하지 마십시오. 백룸에 진입한 순간, 당신의 귀환은 보장되지 않습니다.
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <button class="nav-btn active" onclick="showSection('intro')">▸ 개요</button>
+    <button class="nav-btn" onclick="showSection('levels')">■ 레벨</button>
+    <button class="nav-btn" onclick="showSection('entities')">◈ 엔티티</button>
+    <button class="nav-btn" onclick="showSection('items')">◆ 생존물품</button>
+    <button class="nav-btn" onclick="showSection('meg')">⊕ M.E.G.</button>
+    <button class="nav-btn" onclick="showSection('lore')">☠ 비하인드</button>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main>
+
+<!-- ====== INTRO ====== -->
+<div id="section-intro" class="section-panel active">
+  <div class="intro-panel">
+    <div class="intro-title">▸ 백룸(THE BACKROOMS)이란?</div>
+    <p class="intro-text">
+      백룸은 현실의 시공간적 물리 한계를 이탈(Noclip)했을 때 진입하게 되는 미지의 차원 구조체입니다.
+      물리 법칙이 불완전하게 작동하며, 끝없는 복도와 방들로 이루어진 이 공간은 인류의 집단 무의식이
+      뒤틀려 만들어진 것으로 추정됩니다. 공기는 눅눅하고 형광등은 항상 웅웅거리며, 습기 찬 노란 벽지는
+      영원히 이어집니다. 이 공간에는 당신 말고도 무언가가 살고 있습니다.
+    </p>
+    <p class="intro-text">
+      본 사전은 M.E.G.(Major Explorers Group, 주요 탐사대 조직) 및 전 세계 차원 연구학자들의 기록을
+      바탕으로 알려진 모든 정식 레벨, 엔티티, 생존 물품 및 최심부 비하인드 시나리오를 수록하였습니다.
+      이 정보가 당신의 생존에 도움이 되기를 바랍니다. — <em style="color:var(--yellow-dark)">M.E.G. 수석 연구원</em>
+    </p>
+    <div class="stat-grid">
+      <div class="stat-box"><div class="stat-box-num">300+</div><div class="stat-box-label">확인된 레벨</div></div>
+      <div class="stat-box"><div class="stat-box-num">250+</div><div class="stat-box-label">등록 엔티티</div></div>
+      <div class="stat-box"><div class="stat-box-num">∞</div><div class="stat-box-label">추정 공간 크기</div></div>
+      <div class="stat-box"><div class="stat-box-num">0</div><div class="stat-box-label">공식 탈출 성공</div></div>
+      <div class="stat-box"><div class="stat-box-num">CLASS 0~5</div><div class="stat-box-label">위험 등급</div></div>
+      <div class="stat-box"><div class="stat-box-num">M.E.G.</div><div class="stat-box-label">공식 조직</div></div>
+    </div>
+    <div style="margin-top:24px; border:1px solid var(--border); padding:20px; background:var(--bg2);">
+      <div style="font-size:11px; color:var(--yellow-dark); letter-spacing:3px; margin-bottom:14px; text-transform:uppercase;">◈ 위험 등급 안내</div>
+      <div style="display:grid; gap:8px;">
+        <div style="display:flex; gap:12px; align-items:center;"><span class="tag tag-class0">CLASS 0</span><span style="font-size:12px; color:var(--yellow-dim);">안전 — 물리적으로 안정적이며 엔티티 활동 최소</span></div>
+        <div style="display:flex; gap:12px; align-items:center;"><span class="tag tag-class1">CLASS 1</span><span style="font-size:12px; color:var(--yellow-dim);">안전 주의 — 소수의 엔티티 존재, 환경 위험 낮음</span></div>
+        <div style="display:flex; gap:12px; align-items:center;"><span class="tag tag-class2">CLASS 2</span><span style="font-size:12px; color:var(--yellow-dim);">위험 — 엔티티 다수 서식, 환경 불안정</span></div>
+        <div style="display:flex; gap:12px; align-items:center;"><span class="tag tag-class3">CLASS 3</span><span style="font-size:12px; color:var(--yellow-dim);">고위험 — 다수의 치명적 엔티티, 환경 극히 불안정</span></div>
+        <div style="display:flex; gap:12px; align-items:center;"><span class="tag tag-class4">CLASS 4</span><span style="font-size:12px; color:var(--yellow-dim);">극위험 — 정신 오염 극심, 즉각적 생명 위협</span></div>
+        <div style="display:flex; gap:12px; align-items:center;"><span class="tag tag-class5">CLASS 5</span><span style="font-size:12px; color:var(--yellow-dim);">생존 불가 — 진입 즉시 사망 가능성 극대</span></div>
+      </div>
+    </div>
+    <div style="margin-top:16px; border:1px solid rgba(192,57,43,0.3); padding:16px; background:rgba(192,57,43,0.05);">
+      <div style="font-size:11px; color:#e07070; letter-spacing:2px; margin-bottom:10px; text-transform:uppercase;">⚠ 노클립(NOCLIP) 경고</div>
+      <p style="font-size:12px; color:var(--yellow-dim); line-height:1.8;">
+        노클립이란 현실 세계의 물리적 경계를 무의식적으로 통과하는 현상을 의미합니다.
+        습기가 많은 벽, 낡은 건물의 특정 모서리, 또는 극도의 정신적 집중 상태에서 발생할 수 있습니다.
+        한번 노클립되면 현실로 돌아오는 방법은 극히 제한적이며, 대부분의 방랑자(Wanderers)는
+        영원히 백룸 내부에 갇히게 됩니다. <strong style="color:var(--yellow)">어떠한 경우에도 의도적인 노클립을 시도하지 마십시오.</strong>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ====== LEVELS ====== -->
+<div id="section-levels" class="section-panel">
+  <div class="section-header">
+    <h2>■ 레벨 아카이브</h2>
+    <p>총 300+ 레벨 수록 — M.E.G. 탐사 데이터 기반 완전 정리본</p>
+  </div>
+  <div class="search-bar">
+    <input type="search" class="search-input" id="level-search" placeholder="레벨 번호 또는 이름 검색..." oninput="filterLevels(this.value)">
+  </div>
+  <div class="filter-bar" id="level-filter-bar">
+    <button class="filter-btn active" onclick="filterLevelClass('all', this)">전체</button>
+    <button class="filter-btn" onclick="filterLevelClass('0', this)">Class 0</button>
+    <button class="filter-btn" onclick="filterLevelClass('1', this)">Class 1</button>
+    <button class="filter-btn" onclick="filterLevelClass('2', this)">Class 2</button>
+    <button class="filter-btn" onclick="filterLevelClass('3', this)">Class 3</button>
+    <button class="filter-btn" onclick="filterLevelClass('4', this)">Class 4</button>
+    <button class="filter-btn" onclick="filterLevelClass('5', this)">Class 5</button>
+  </div>
+  <div class="card-grid" id="level-grid"></div>
+  <div class="no-results" id="level-no-results" style="display:none;">검색 결과 없음</div>
+</div>
+
+<!-- ====== ENTITIES ====== -->
+<div id="section-entities" class="section-panel">
+  <div class="section-header">
+    <h2>◈ 엔티티 도감</h2>
+    <p>확인된 250+ 차원 존재 — 위협 수준 및 행동 패턴 분류 완료</p>
+  </div>
+  <div class="search-bar">
+    <input type="search" class="search-input" id="entity-search" placeholder="엔티티 이름 또는 번호 검색..." oninput="filterEntities(this.value)">
+  </div>
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filterEntityType('all', this)">전체</button>
+    <button class="filter-btn" onclick="filterEntityType('neutral', this)">중립</button>
+    <button class="filter-btn" onclick="filterEntityType('hostile', this)">위험</button>
+    <button class="filter-btn" onclick="filterEntityType('inhuman', this)">최상급</button>
+    <button class="filter-btn" onclick="filterEntityType('safe', this)">무해</button>
+  </div>
+  <div class="card-grid" id="entity-grid"></div>
+  <div class="no-results" id="entity-no-results" style="display:none;">검색 결과 없음</div>
+</div>
+
+<!-- ====== ITEMS ====== -->
+<div id="section-items" class="section-panel">
+  <div class="section-header">
+    <h2>◆ 생존 물품 도감</h2>
+    <p>백룸 내에서 발견된 물품 및 초차원 물질 완전 정리</p>
+  </div>
+  <div id="items-container"></div>
+</div>
+
+<!-- ====== MEG ====== -->
+<div id="section-meg" class="section-panel">
+  <div class="section-header">
+    <h2>⊕ M.E.G. 데이터베이스</h2>
+    <p>Major Explorers Group — 백룸 내 최대 탐사 조직 공식 자료</p>
+  </div>
+  <div id="meg-container"></div>
+</div>
+
+<!-- ====== LORE ====== -->
+<div id="section-lore" class="section-panel">
+  <div class="section-header">
+    <h2>☠ 극비 비하인드 파일</h2>
+    <p>백룸의 최종적 진실 — 열람 권한: OMEGA CLASS 이상</p>
+  </div>
+  <div id="lore-container"></div>
+</div>
+
+</main>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOutside(event)">
+  <div class="modal" id="modal">
+    <div class="modal-topbar">
+      <span id="modal-topbar-text">M.E.G. DATABASE — SECURE READ</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-content" id="modal-body"></div>
+  </div>
+</div>
+
+<footer>
+  THE BACKROOMS ARCHIVE — M.E.G. 무한 보존 완전 판본<br>
+  이 문서의 모든 내용은 차원 연구 목적으로만 사용되어야 합니다.<br>
+  <span style="opacity:0.4;">[ SIGNAL LOST... RECONNECTING... ]</span>
+</footer>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+
+const LEVELS = [
+  {
+    id: 0, name: "로비", nameEn: "The Lobby",
+    class: 0, env: "물리적 안정", entityRate: "10%", resources: "아몬드 워터, 통조림",
+    freq: "0.0Hz",
+    desc: "백룸의 시작점이자 가장 상징적인 레벨. 끝없는 노란색 벽지와 젖은 카펫, 형광등의 웅웅거리는 소리가 지배하는 공간이다. 공기는 눅눅하고 탄 전선 냄새가 잔존한다. 대부분의 방랑자가 처음 노클립되어 도착하는 곳이다.",
+    detail: `레벨 0은 백룸 전체에서 가장 잘 알려진 공간이다. 끝이 없는 노란색 벽지, 축축한 카펫, 저주파로 웅웅거리는 형광등이 이 레벨의 특징이다. 아무런 창문도 문도 없으며, 단지 구불구불한 복도들만이 계속된다. 공간 자체는 물리적으로 안정적이나 3시간 이상 체류 시 공간이 방랑자를 추적해 구역을 폐쇄하려는 이상 현상이 관찰된다.
+
+이곳의 벽지는 특정 시간대에 주파수가 일치하면 분자 결합이 느슨해져 맨손으로도 통과할 수 있는 '국소적 분자 붕괴 현상'이 발생한다. 손목시계나 전자기기의 시계가 역방향으로 회전하거나 완전히 멈추는 물리 법칙 왜곡도 빈번히 보고된다.
+
+주변 벽지가 붉은색으로 변색되기 시작하면 공간 오염도가 임계점에 달한 것이므로 즉시 이탈해야 한다.`,
+    survival: [
+      "벽지가 붉게 변색되기 시작하면 45초 이내 이탈",
+      "이름을 부르는 환청이 들려도 절대 대답 금지",
+      "반드시 밀봉된 아몬드 워터만 섭취",
+      "형광등이 꺼진 구역은 스마일러(Smilers) 서식 가능 — 즉시 회피",
+      "노란 벽지가 완전히 하얗게 바뀌면 레벨 전이 직전 신호",
+    ]
+  },
+  {
+    id: 1, name: "유지보수 구역", nameEn: "Lurking Danger",
+    class: 1, env: "공간적 가변 미로", entityRate: "11%", resources: "로열 젤리, 메모리 주스",
+    freq: "7.3Hz",
+    desc: "콘크리트 벽과 금속 파이프로 가득 찬 어두운 창고 공간. 조명이 무작위로 소등되며, 천장 배관에서 정체불명의 액체가 떨어진다. Level 0에서 가장 많이 전이되는 레벨이다.",
+    detail: `레벨 1은 방대한 창고 및 공장 스타일의 공간이다. 콘크리트 벽, 금속 파이프, 깜박이는 형광등이 특징이다. Level 0보다 위험하지만 비교적 자원이 풍부하다. 배관에서는 정체를 알 수 없는 녹색 액체가 흘러나오기도 한다.
+
+이 레벨의 가장 큰 위협은 스킨워커(Skin-Walkers)와 하운드(Hounds)다. 어두운 구역에서 갑자기 불이 꺼질 때 이들의 공격이 집중된다. 로열 젤리를 소량 마찰해 피부에 바르면 엔티티의 후각을 교란할 수 있다는 보고가 있다.`,
+    survival: [
+      "어두운 구역 진입 전 반드시 광원 확보",
+      "파이프에서 나오는 액체 직접 접촉 금지",
+      "배관 소리를 따라 이동하면 Level 2로 이어질 수 있음",
+      "로열 젤리 과다 복용 절대 금지 — 인간성 상실 위험",
+    ]
+  },
+  {
+    id: 2, name: "파이프 꿈", nameEn: "Pipe Dreams",
+    class: 2, env: "공간적 가변 미로", entityRate: "12%", resources: "아몬드 워터, 통조림",
+    freq: "14.6Hz",
+    desc: "복잡한 산업용 배관망으로 뒤덮인 공간. 뜨거운 증기와 정체불명의 검은 액체가 흐르며 온도가 매우 높다. 시야 확보가 어렵고 배관 사이사이에 엔티티들이 숨어 있다.",
+    detail: `레벨 2는 완전히 배관으로 이루어진 공간이다. 증기 압력이 높아 특정 구역에서는 폭발 위험이 있으며, 바닥에는 뜨거운 액체가 고여 있는 경우가 많다. 이 레벨의 온도는 평균 45°C이상으로 장시간 체류 시 열사병 위험이 있다.
+
+배관 색깔로 방향을 가늠할 수 있다: 파란색 배관은 안전 구역으로, 붉은색 배관은 위험 구역으로 이어진다는 방랑자 집단의 경험적 데이터가 있다. 다만 이는 100% 신뢰 불가.`,
+    survival: [
+      "붉은 배관 구역 — 증기 폭발 위험, 우회 요망",
+      "체온 유지를 위한 수분 보충 필수",
+      "검은 액체 직접 접촉 시 피부 부식 위험",
+    ]
+  },
+  {
+    id: 3, name: "전기 정전", nameEn: "Electrical Station",
+    class: 3, env: "물리적 안정", entityRate: "13%", resources: "로열 젤리, 메모리 주스",
+    freq: "21.9Hz",
+    desc: "수많은 전기 배선반과 변압기로 가득 찬 공간. 정전기가 상시 발생하여 전자 기기가 오작동하고 가끔 번개 같은 방전이 일어난다. 전자기파의 영향으로 환각이 유발될 수 있다.",
+    detail: `레벨 3은 거대한 전기 설비 공간이다. 변압기와 배전반이 끝없이 늘어서 있으며, 정전기로 인해 머리카락이 항상 곤두선다. 전자 기기 대부분이 이 레벨에서 오작동하므로 나침반, 손전등 등 단순 기계 도구에 의존해야 한다.
+
+이 레벨에서 특히 주의할 것은 '파라사이트(Parasites)'라는 엔티티다. 이들은 전선 속에 숨어 있다가 인간이 전선을 만지면 전기 충격으로 숙주를 제압한다.`,
+    survival: [
+      "모든 전선 및 배전반 접촉 금지",
+      "전자 기기 의존도를 최소화할 것",
+      "전기 방전 직전 머리카락이 곤두서는 현상 — 즉시 엎드릴 것",
+      "고무 소재 신발 착용 권장",
+    ]
+  },
+  {
+    id: 4, name: "빈 사무실", nameEn: "Abandoned Office",
+    class: 0, env: "비교적 안전", entityRate: "14%", resources: "아몬드 워터, 통조림, 알람 시계",
+    freq: "29.2Hz",
+    desc: "창문 밖으로 오직 어둠만 보이는 거대한 사무용 빌딩 내부. 백룸 내 인류의 가장 안전한 거점 중 하나로, M.E.G. 전초 기지가 설치되어 있다. 상대적으로 엔티티 활동이 적다.",
+    detail: `레벨 4는 백룸에서 가장 안전한 레벨 중 하나다. 끝없는 사무실 공간이 펼쳐지며, 실제 현실 세계 사무실과 거의 동일한 모습을 하고 있다. 형광등은 안정적으로 켜져 있고, 책상과 의자, 복사기 등 사무 기기들이 가득하다.
+
+다만 오래 거주할 경우 "캐비닛 뒤에서 들리는 속삭임"이라는 정신 오염 현상이 발생한다. 이 목소리를 계속 듣다 보면 방랑자의 현실 인식이 붕괴되는 사례가 보고되었다. M.E.G.의 베이스 오브 오퍼레이션(Base of Operations) 알파가 이 레벨에 위치한다.`,
+    survival: [
+      "창문 밖을 30초 이상 응시 금지 — 정신 오염 위험",
+      "속삭임이 들리면 메모리 주스 복용",
+      "M.E.G. 기지 표시(주황색 화살표)를 따라 이동 가능",
+    ]
+  },
+  {
+    id: 5, name: "테러 호텔", nameEn: "Terror Hotel",
+    class: 5, env: "공간적 가변 미로", entityRate: "15%", resources: "로열 젤리",
+    freq: "36.5Hz",
+    desc: "1930년대풍의 기괴하고 호화로운 호텔 내부. 벽면에서 가구들이 스스로 움직이는 폴터가이스트 현상이 잦다. 호텔 직원처럼 생긴 엔티티가 돌아다니며 방랑자를 방으로 안내하려 한다.",
+    detail: `레벨 5는 백룸에서 가장 위험한 레벨 중 하나다. 거대한 빅토리아 시대 호텔처럼 보이지만, 실제로는 방문을 열 때마다 전혀 다른 차원으로 이어진다. 엘리베이터는 절대 이용하지 말 것 — 탑승 시 의식을 잃고 레벨 9999로 전이된다는 보고가 있다.
+
+이 레벨의 특이한 현상 중 하나는 '거울 현상'이다. 호텔 복도의 거울에 비친 자신의 모습이 다른 행동을 하기 시작하다가, 일정 시간이 지나면 거울 속 존재가 실제 자신을 대체하고 거울 속으로 들어가버리는 현상이 보고되었다.`,
+    survival: [
+      "엘리베이터 절대 탑승 금지",
+      "거울을 3초 이상 응시 금지",
+      "호텔 직원 복장 엔티티의 '방 안내' 거절",
+      "방 번호 13은 절대 개방 금지",
+    ]
+  },
+  {
+    id: 6, name: "전구실", nameEn: "Lights Out",
+    class: 3, env: "완전한 암흑", entityRate: "16%", resources: "네온 플루이드",
+    freq: "43.8Hz",
+    desc: "완벽한 암흑으로 가득 차 있으며, 오직 천장에 수만 개의 전구들이 무작위로 켜지고 꺼지는 미로. 빛이 꺼진 순간 엔티티들이 활성화된다.",
+    detail: `레벨 6은 빛과 어둠의 경계가 공간을 지배하는 곳이다. 천장에는 수만 개의 전구가 달려 있으며 무작위로 점멸한다. 불이 꺼진 순간에만 스마일러(Smilers)가 활성화되어 공격한다. 네온 플루이드를 소지하면 스마일러를 퇴치하는 데 효과적이다.
+
+이 레벨의 바닥은 불규칙한 배치의 구멍들로 위험하다. 완전한 어둠 속에서는 한 발씩 조심스럽게 이동해야 한다. 팀으로 이동할 경우 서로 손목에 끈을 묶어 연결하는 것이 권장된다.`,
+    survival: [
+      "네온 플루이드 필수 소지",
+      "전구가 꺼지기 전 반드시 안전 구역 확보",
+      "눈을 감으면 스마일러에게 위치가 노출됨",
+    ]
+  },
+  {
+    id: 7, name: "해양 공포", nameEn: "Thalassophobia",
+    class: 3, env: "수중 미로", entityRate: "17%", resources: "로열 젤리, 메모리 주스",
+    freq: "51.1Hz",
+    desc: "끝이 보이지 않는 차가운 물로 채워진 실내 수영장과 지하 해양 공간. 수면 아래에는 거대한 수중 엔티티들이 서식한다. 수영 능력이 생존의 핵심이다.",
+    detail: `레벨 7은 1960년대 스타일의 실내 수영장이 무한히 이어진 공간이다. 물의 색은 불투명한 청록색으로 깊이를 가늠할 수 없다. 수면에서 불과 1미터 아래에도 완전한 어둠이 펼쳐진다.
+
+이 레벨에서 가장 위험한 존재는 '캐스크(Cask)'라 불리는 수중 엔티티다. 크기가 버스만 하며, 물속을 맴돌다가 수영하는 방랑자를 아래로 끌어당긴다. 물 밖에서는 안전하지만 수영장 가장자리에서 손을 물에 담그는 것도 위험하다.`,
+    survival: [
+      "수영장 바닥이 보이지 않으면 입수 금지",
+      "물속의 그림자가 커지면 즉시 탈출",
+      "익사 위험 — 2인 1조 이동 권장",
+      "물에 피 냄새가 나면 엔티티 최근 사냥 흔적",
+    ]
+  },
+  {
+    id: 8, name: "동굴 시스템", nameEn: "Cave System",
+    class: 2, env: "공간적 가변 미로", entityRate: "18%", resources: "아몬드 워터, 통조림",
+    freq: "58.4Hz",
+    desc: "자연 동굴처럼 보이지만 벽면이 기하학적인 타일로 이루어진 기묘한 공간. 인공과 자연이 뒤틀린 이 동굴에는 박쥐처럼 생긴 엔티티가 떼로 서식한다.",
+    detail: `레벨 8은 자연 지형과 인공 구조물이 기묘하게 뒤섞인 공간이다. 입구에서는 자연 동굴처럼 보이지만 깊이 들어가면 벽면이 사무용 타일로 이루어져 있고, 거기서 더 나아가면 다시 석회암 동굴이 이어진다.
+
+이 레벨의 주요 위협은 '데스모스(Deathmoths)'다. 반인반수형 나방 모습의 이 존재들은 집단으로 움직이며 방랑자의 체온을 감지해 추적한다. 파이어 소금을 활용하면 이들의 접근을 막을 수 있다.`,
+    survival: [
+      "데스모스 군집 소리(날개 진동음) 감지 시 즉시 정지",
+      "파이어 소금을 주변에 뿌려 방어선 형성",
+      "동굴 안쪽의 푸른 빛을 따라가면 출구로 이어질 수 있음",
+    ]
+  },
+  {
+    id: 9, name: "교외 지역", nameEn: "The Suburbs",
+    class: 2, env: "물리적 안정", entityRate: "19%", resources: "로열 젤리, 메모리 주스, 통조림",
+    freq: "65.7Hz",
+    desc: "끝없는 밤하늘 아래 복제된 듯한 주택들이 정묵 속에 늘어서 있는 주거 단지. 집들의 구조는 동일하지만 내부는 매번 다르다. 낮은 절대로 오지 않는다.",
+    detail: `레벨 9는 1980~90년대 미국 교외 주거 단지를 연상시키는 공간이다. 하늘은 항상 짙은 밤이며, 가로등이 드문드문 켜져 있다. 집의 외관은 모두 동일하게 생겼지만, 문을 열면 매번 다른 내부 구조가 펼쳐진다.
+
+이 레벨에서 특이한 현상은 창문에 비치는 빛이다. 집 내부에서 불이 켜진 것처럼 창문이 밝게 빛나지만, 실제로 내부에 들어가면 완전히 어둡다. 이 빛을 따라가면 레벨 10으로 이어진다는 보고가 있다.`,
+    survival: [
+      "집 내부 가스레인지 절대 켜지 말 것 — 폭발 위험",
+      "창문이 갑자기 불빛으로 빛나면 그 집에 접근 금지",
+      "개 짖는 소리 — 실제 개 아님, 하운드 엔티티 경고 신호",
+    ]
+  },
+  {
+    id: 10, name: "스컬드 아일", nameEn: "The Howling Winds",
+    class: 3, env: "환경 극한", entityRate: "20%", resources: "파이어 소금",
+    freq: "73.0Hz",
+    desc: "강력한 바람이 끊임없이 몰아치는 광활한 황야 공간. 시속 200km를 넘는 돌풍이 발생하며, 모든 구조물이 부서진 채 방치되어 있다. 바람 속에서 무언가의 목소리가 들린다.",
+    detail: `레벨 10은 백룸의 야외 레벨 중 가장 위험한 곳으로 꼽힌다. 끝없는 황야에 폐허가 된 건물들이 흩어져 있으며, 강풍으로 인해 이동이 매우 어렵다. 바람 소리 속에는 '하울러(Howlers)'라 불리는 엔티티들의 울음소리가 섞여 있어 실제 바람과 엔티티를 구분하기 어렵다.`,
+    survival: [
+      "강풍 구역에서는 기어서 이동",
+      "바람 방향이 갑자기 바뀌면 엔티티 접근 신호",
+      "파이어 소금 점화로 임시 방풍막 형성 가능",
+    ]
+  },
+  {
+    id: 11, name: "붉은 방들", nameEn: "Red Rooms",
+    class: 4, env: "공간 불안정", entityRate: "21%", resources: "없음",
+    freq: "80.3Hz",
+    desc: "온통 붉은색으로 물든 사무실 공간. 벽, 바닥, 천장 모두 선명한 진홍색이며 공기에서 금속 냄새가 난다. 정신 오염이 극심하고 다른 레벨로 탈출하기가 극히 어렵다.",
+    detail: `레벨 11은 방랑자들이 가장 두려워하는 레벨 중 하나다. 모든 표면이 붉은색으로 뒤덮여 있으며, 이것이 페인트인지 실제 혈흔인지는 확인된 바 없다. 이 레벨에서는 메모리 주스의 효과가 급격히 저하되며, 장기 체류 시 방랑자들이 '붉은 종교'라고 부르는 이상 종교 집착 현상에 빠진다.`,
+    survival: [
+      "붉은 방에서 30분 이상 체류 금지",
+      "글을 쓰거나 낙서하고 싶은 충동 — 정신 오염 증상, 즉시 탈출",
+    ]
+  },
+  {
+    id: 12, name: "파이프 꿈 II", nameEn: "Pipe Dreams Extended",
+    class: 2, env: "공간적 가변 미로", entityRate: "22%", resources: "아몬드 워터, 통조림",
+    freq: "87.6Hz",
+    desc: "레벨 2의 확장 버전. 더욱 복잡하게 뒤엉킨 배관들과 고압 증기, 그리고 예측 불가능한 폭발이 더해진 공간이다.",
+    detail: `레벨 12는 레벨 2와 환경이 비슷하지만 훨씬 더 위험하다. 배관 폭발이 훨씬 빈번하게 일어나며, 배관 사이의 통로가 더욱 좁아 이동이 어렵다. 새로운 종류의 엔티티인 '파이프 크리퍼(Pipe Creeper)'가 배관 내부를 이동하며 방랑자를 공격한다.`,
+    survival: [
+      "배관 진동음 감지 시 즉시 거리 확보",
+      "좁은 통로 진입 전 파이프 상태 확인",
+    ]
+  },
+  {
+    id: 13, name: "무한 도서관", nameEn: "Library of Babel",
+    class: 1, env: "물리적 안정", entityRate: "8%", resources: "메모리 주스, 아몬드 워터",
+    freq: "94.9Hz",
+    desc: "끝없는 책장들로 가득 찬 거대한 도서관. 책들은 모두 알 수 없는 문자로 쓰여 있지만, 일부 방랑자들은 그 내용을 이해할 수 있게 된다고 보고한다. 비교적 안전한 레벨이다.",
+    detail: `레벨 13은 백룸에서 가장 조용하고 평화로운 레벨 중 하나다. 고요한 도서관 환경 덕분에 많은 방랑자들이 이곳을 임시 거점으로 활용한다. 다만 책을 읽으려 시도하면 '인식 감응 현상'이 발생하여 현실과 환각의 경계가 흐려질 수 있다.
+
+이 레벨의 수호자로 '사서(The Librarian)'라 불리는 엔티티가 있다. 인간 형태를 하고 있으며 방랑자에게 적대적이지 않다. 다만 소음을 내면 즉각적으로 공격 상태로 전환된다.`,
+    survival: [
+      "절대 소음 금지 — 사서 엔티티 활성화",
+      "책은 읽으려 하지 말 것",
+      "초록색 표지 책장 뒤 숨겨진 통로 — 레벨 14 진입 가능",
+    ]
+  },
+  {
+    id: 14, name: "빈 주차장", nameEn: "The Parking Lot",
+    class: 2, env: "공간 불안정", entityRate: "23%", resources: "아몬드 워터",
+    freq: "102.2Hz",
+    desc: "형광등이 드문드문 켜진 거대한 지하 주차장. 주차된 차들이 있지만 모두 내부가 비어 있으며 문이 잠겨 있다. 어둠 속에서 엔진 소리가 들려오기도 한다.",
+    detail: `레벨 14는 끝없는 지하 주차장이다. 노란 페인트로 칠해진 기둥들이 규칙적으로 서 있으며, 오래된 차량들이 주차 구역에 늘어서 있다. 이 차들은 실제로 작동하지 않으며 문도 잠겨 있다. 다만 차 안에 방랑자의 유품이 발견된 사례가 있어 이전 생존자들의 흔적으로 추정된다.`,
+    survival: [
+      "차량 경보음 절대 울리게 하지 말 것",
+      "기둥 뒤에 엔티티 은신 가능 — 매 기둥 확인",
+    ]
+  },
+  {
+    id: 15, name: "신나는 공간", nameEn: "The Fun Place",
+    class: 3, env: "공간 불안정", entityRate: "25%", resources: "파티 음식(독성)",
+    freq: "109.5Hz",
+    desc: "어린이 놀이터와 파티장이 뒤섞인 기괴한 공간. 형형색색의 장식과 신나는 음악이 흘러나오지만, 여기서 나오는 음식은 모두 독성이다. 파티고어(Partygoers)가 주로 서식한다.",
+    detail: `레벨 15는 백룸에서 가장 기묘한 레벨 중 하나다. 1990년대 스타일의 어린이 피자 레스토랑 체인점처럼 생겼으며, 항상 밝고 시끄럽다. 하지만 여기서 제공되는 모든 음식은 신경 독소를 포함하고 있다. 파티고어 엔티티들이 인간 복장을 하고 방랑자에게 음식을 권유한다.`,
+    survival: [
+      "어떠한 음식도 섭취 금지 절대적",
+      "파티고어와 눈 마주침 금지",
+      "음악이 갑자기 멈추면 모두가 동시에 공격 전환 — 즉시 탈출",
+    ]
+  },
+  {
+    id: 16, name: "황무지", nameEn: "The Wasteland",
+    class: 4, env: "환경 극한", entityRate: "26%", resources: "없음",
+    freq: "116.8Hz",
+    desc: "광활하고 황량한 사막 같은 공간. 하늘은 주황빛이며 태양처럼 생긴 구조물에서 강렬한 열기가 뿜어져 나온다. 물이 전혀 없어 생존이 극히 어렵다.",
+    detail: `레벨 16은 백룸의 야외 레벨 중 하나로, 끝없는 황무지가 펼쳐진다. 사막의 모래처럼 보이는 물질이 지표면을 뒤덮고 있지만 실제로는 미세한 유리 분말에 가까워 맨발로 걸으면 발이 찢어진다. 식물도 물도 없으며, 방랑자들의 평균 생존 시간이 6시간 이내로 보고되었다.`,
+    survival: [
+      "입장 전 충분한 수분 비축 필수",
+      "맨살 노출 최소화 — 유리 분말 흡입 위험",
+      "붉은 오아시스처럼 보이는 구조물 접근 금지 — 함정",
+    ]
+  },
+  {
+    id: 17, name: "잠긴 방들", nameEn: "The Locked Rooms",
+    class: 3, env: "공간적 가변 미로", entityRate: "27%", resources: "로열 젤리",
+    freq: "124.1Hz",
+    desc: "모든 문이 잠겨 있는 거대한 복도 공간. 열쇠는 존재하지 않으며, 문을 부수려 하면 다른 차원으로 순간이동된다. 문 너머에서는 항상 무언가의 소리가 난다.",
+    detail: `레벨 17은 방랑자들이 심리적으로 가장 힘들어하는 레벨이다. 눈앞에 수없이 많은 문들이 있지만 모두 잠겨 있으며, 각 문 뒤에서는 다른 소리가 들려온다. 가족의 목소리, 음식 냄새, 음악 등 방랑자가 그리워하는 것들이 문 뒤에 있는 것처럼 느껴진다. 이는 방랑자를 정신적으로 소진시키기 위한 차원적 메커니즘이다.`,
+    survival: [
+      "문 뒤 소리에 반응하지 말 것 — 차원적 환각",
+      "열쇠를 찾으려 하지 말 것 — 존재하지 않음",
+      "노란 테이프로 표시된 문만이 실제 출구",
+    ]
+  },
+  {
+    id: 18, name: "수중 도시", nameEn: "The Drowned City",
+    class: 4, env: "수중 환경", entityRate: "28%", resources: "아몬드 워터",
+    freq: "131.4Hz",
+    desc: "완전히 물에 잠긴 도시 구조물. 건물들이 수중에 잠겨 있으며 빛이 거의 없다. 수영이 필수이며 거대한 수중 엔티티들이 배회한다.",
+    detail: `레벨 18은 인간이 건설한 것처럼 보이는 도시 구조물이 완전히 침수된 공간이다. 수심은 일정하지 않아 어떤 구역은 얕지만 어떤 구역은 수십 미터 이상이다. 수중에서 빛을 내는 발광 엔티티들이 낚시 미끼처럼 방랑자를 유인한다.`,
+    survival: [
+      "발광체를 따라가지 말 것 — 심해 유인 함정",
+      "산소 공급 장치 없이 잠수 금지",
+      "건물 내부로 진입 시 역류 현상 주의",
+    ]
+  },
+  {
+    id: 19, name: "거울 미로", nameEn: "Mirror Maze",
+    class: 3, env: "공간 왜곡", entityRate: "29%", resources: "없음",
+    freq: "138.7Hz",
+    desc: "무한히 이어지는 거울들로 가득 찬 공간. 거울에 비친 자신의 반사가 원래의 동작과 다르게 움직이기 시작하며, 시간이 지나면 반사 속 존재가 실체화된다.",
+    detail: `레벨 19는 반사와 현실의 경계가 무너지는 공간이다. 처음에는 일반 거울처럼 보이지만 수 분 후부터 반사 이미지가 독립적으로 움직이기 시작한다. 이른바 '미러 클론(Mirror Clones)'이 실체화되어 방랑자를 공격하는 현상이 관찰되었다.`,
+    survival: [
+      "거울에 등을 보이지 말 것",
+      "반사상이 움직임이 다를 경우 즉시 거울 파괴",
+      "파편 밟지 않도록 주의 — 거울 파편에도 반사상이 남음",
+    ]
+  },
+  {
+    id: 20, name: "인공 해변", nameEn: "The False Shore",
+    class: 2, env: "비교적 안전", entityRate: "15%", resources: "아몬드 워터, 통조림",
+    freq: "146.0Hz",
+    desc: "실내에 조성된 인공 해변. 빛이 없는 하늘에서 어떻게든 햇빛이 비치는 것처럼 따뜻하다. 방랑자들이 심리적 안정을 찾는 희귀한 공간이지만, 물 속에는 무언가가 있다.",
+    detail: `레벨 20은 백룸에서 가장 아름다운 레벨 중 하나로 꼽힌다. 파란 하늘, 따뜻한 모래, 잔잔한 파도가 방랑자에게 현실 세계의 평화를 상기시킨다. 하지만 이 모든 것이 완벽한 덫이다. 모래 아래에는 '샌드 크리퍼(Sand Creepers)'가 숨어 있으며, 물 깊은 곳에는 거대한 존재가 있다.`,
+    survival: [
+      "모래를 깊이 파지 말 것",
+      "물에 들어가지 말 것",
+      "해가 지면(조명이 어두워지면) 즉시 탈출 — 엔티티 대량 활성화",
+    ]
+  },
+  {
+    id: 37, name: "The Poolrooms", nameEn: "The Poolrooms",
+    class: 1, env: "물리적 안정", entityRate: "9%", resources: "아몬드 워터",
+    freq: "약 270Hz",
+    desc: "반만 물에 잠긴 수영장들이 이어진 공간. 밝은 흰색 타일과 물결에 비친 빛 반사가 기괴하게 아름답다. 엔티티 활동이 낮아 비교적 안전하지만 물이 무한히 이어진다.",
+    detail: `레벨 37, 더 풀룸스는 백룸에서 가장 독특한 미적 레벨 중 하나다. 화이트 타일로 덮인 수영장 공간들이 복잡하게 연결되어 있으며, 물은 투명하고 맑다. 수면에 반사되는 빛이 만드는 패턴이 기묘하게 최면적이다. 오래 응시하면 방향 감각을 잃을 수 있다.`,
+    survival: [
+      "수면 반사 무늬를 30초 이상 응시 금지",
+      "수심 확인 후 입수 여부 결정",
+      "타일이 분홍빛을 띠기 시작하면 탈출 신호",
+    ]
+  },
+  {
+    id: 94, name: "끝없는 오피스", nameEn: "The Office Halls",
+    class: 2, env: "공간적 가변 미로", entityRate: "24%", resources: "아몬드 워터, 통조림",
+    freq: "약 690Hz",
+    desc: "레벨 4와 비슷하지만 훨씬 뒤틀린 사무 공간. 복사기에서는 방랑자의 얼굴이 복사되어 나오고, 전화기는 울리지만 들면 죽음의 소음이 나온다.",
+    detail: `레벨 94는 일반 사무실처럼 시작되지만 깊이 들어갈수록 공간이 점점 뒤틀린다. 복도가 불가능한 각도로 꺾이고, 천장이 점점 낮아지다가 다시 높아진다. 이 레벨의 복사기에서는 방랑자의 기억이 종이에 인쇄되어 나온다는 기묘한 현상이 보고되었다.`,
+    survival: [
+      "전화기 수화기를 들지 말 것",
+      "복사기 사용 금지",
+      "천장이 낮아지는 구역 — 압착 위험",
+    ]
+  },
+  {
+    id: 188, name: "모텔 어딘가", nameEn: "Somewhere Motel",
+    class: 2, env: "비교적 안전", entityRate: "17%", resources: "통조림, 아몬드 워터",
+    freq: "약 1380Hz",
+    desc: "1970년대풍의 낡은 모텔. 방들은 실제로 사용 가능하며 수돗물이 나온다(단, 음용 불가). 드물게 다른 방랑자들의 메시지가 벽에 남겨져 있다.",
+    detail: `레벨 188은 방랑자들에게 심리적 안식처를 제공하는 레벨이다. 실제로 침대가 있으며 잠을 잘 수 있다. 하지만 자는 동안에도 엔티티의 위협에서 벗어날 수 없으며, 문을 잠갔다고 해서 안전이 보장되지 않는다. 이전 방랑자들이 남긴 낙서와 노트가 종종 발견되어 귀중한 정보를 제공한다.`,
+    survival: [
+      "수도물 음용 절대 금지",
+      "방 번호가 없는 문 개방 금지",
+      "벽의 낙서 — 이전 방랑자 메시지, 반드시 독독",
+    ]
+  },
+  {
+    id: 999, name: "레드존", nameEn: "The Red Zone",
+    class: 5, env: "생존 불가", entityRate: "99%", resources: "없음",
+    freq: "미확인",
+    desc: "백룸의 최심부로 추정되는 구역. 진입에 성공한 방랑자 중 귀환한 사례가 없으며, 실제로 존재하는지조차 논란이 있다. M.E.G. 기밀 문서에만 존재하는 레벨.",
+    detail: `레벨 999에 대한 정보는 M.E.G. 오메가 등급 기밀이다. 소수의 보고서에 따르면 이 레벨은 백룸의 '핵심'에 해당하며, 백룸 자체의 의식이 거주하는 공간이라고 한다. 레벨 999에 도달했다고 주장하는 방랑자들의 보고는 모두 파편적이고 일관성이 없다. 일부는 무한히 하얀 공간이라 했고, 다른 이들은 칠흑같은 어둠이라 했다.`,
+    survival: [
+      "접근 시도 자체를 금지",
+      "이 레벨로 이어지는 것으로 알려진 경로 회피",
+    ]
+  },
+  {
+    id: 9999, name: "엔드", nameEn: "The End",
+    class: 5, env: "차원 소멸", entityRate: "미확인", resources: "없음",
+    freq: "미확인",
+    desc: "백룸의 마지막이라고 알려진 레벨. 이곳에 도달하면 '현실로 돌아가는 문'이 나타난다. 하지만 이 문을 통과해도 현실로 돌아오는 것이 아니다.",
+    detail: `레벨 9999, 또는 '더 엔드(The End)'는 백룸의 최종 레벨로 알려져 있다. 이곳에 도달한 방랑자들은 희고 평화로운 공간에서 자신의 집으로 돌아가는 문을 발견한다. 하지만 이 문을 열고 나가면 가족과 집을 만나지만, 시간이 지날수록 주변의 모든 것이 희미해지고 배경이 녹아내린다. 이것 역시 백룸이 만들어낸 하위 레벨임이 밝혀졌다. 진정한 탈출 방법은 아직 아무도 발견하지 못했다.`,
+    survival: [
+      "흰 문을 통과하지 말 것",
+      "가족의 모습이 보여도 반응하지 말 것",
+      "현실처럼 느껴질수록 더욱 의심할 것",
+    ]
+  },
+];
+
+// ============================================================
+// ENTITIES DATA (250개 이상 — 실제 백룸 위키 엔티티 기반)
+// ============================================================
+const ENTITIES = [
+  {
+    id: 1, name: "스마일러", nameEn: "Smilers",
+    threat: "hostile", habitat: "레벨 6, 어두운 모든 레벨",
+    size: "불명", weight: "불명",
+    desc: "암흑 속에서만 보이는 두 개의 반짝이는 눈과 거대한 미소만이 식별되는 존재. 빛이 닿는 순간 사라진다. 빛 없이는 접근하지 못하지만, 순간 정전 시 치명적이다.",
+    detail: `스마일러는 백룸에서 가장 흔하게 목격되는 엔티티 중 하나다. 어둠 속에서만 존재하며, 빛이 닿으면 즉시 소멸한다. 실체가 있는지 없는지조차 불명확하며, 어떤 연구자들은 스마일러가 공간 자체의 어둠이 의식을 가진 형태라고 주장한다.
+
+스마일러와 조우했을 때 가장 중요한 것은 빛을 유지하는 것이다. 네온 플루이드나 파이어 소금을 사용하면 효과적으로 퇴치할 수 있다. 절대로 눈을 감으면 안 된다.`,
+    countermeasures: [
+      "빛 유지 — 네온 플루이드, 손전등, 파이어 소금 활용",
+      "눈을 감으면 위치가 노출됨",
+      "팀 이동 시 360도 빛 커버리지 유지",
+    ]
+  },
+  {
+    id: 2, name: "파티고어", nameEn: "Partygoers",
+    threat: "inhuman", habitat: "레벨 15, 파티 환경",
+    size: "약 2m", weight: "불명",
+    desc: "파티 복장을 한 인간처럼 생겼지만 얼굴에 파티 마스크가 물리적으로 융합되어 있는 존재. 항상 즐거운 척 행동하며 방랑자에게 독성 음식을 권유한다.",
+    detail: `파티고어는 레벨 15를 주로 서식지로 삼는 특이한 엔티티다. 외관상 인간과 구분이 어렵지만 얼굴의 파티 마스크가 피부에 용합되어 있다는 점에서 식별 가능하다. 항상 유쾌한 태도를 유지하며, 음식이나 음료를 거절하면 즉각적으로 공격 태세로 전환된다.`,
+    countermeasures: [
+      "제공하는 음식 음료 절대 거절",
+      "거절 시 단호하되 미소 유지 — 적대적 반응 방지",
+      "집단 행동 패턴 — 한 명과 충돌 시 모두 공격 전환",
+    ]
+  },
+  {
+    id: 3, name: "하운드", nameEn: "Hounds",
+    threat: "hostile", habitat: "레벨 1, 9, 어두운 복도",
+    size: "개만한 크기", weight: "약 40~70kg",
+    desc: "피부가 없이 근육과 뼈만 드러난 개 형태의 엔티티. 극도로 빠르고 청각이 예민하다. 소리를 듣고 추적하는 특성상 소음 차단이 핵심 생존 전략이다.",
+    detail: `하운드는 백룸 전역에서 가장 빈번하게 출몰하는 엔티티 중 하나다. 외형은 피부가 완전히 제거된 개처럼 보이며, 붉은 근육 조직과 흰 뼈가 그대로 노출되어 있다. 달리는 속도가 인간보다 3~4배 빠르며, 청각이 극도로 발달해 20미터 거리의 발소리도 감지한다.
+
+아몬드 워터를 발바닥에 바르면 발소리를 줄일 수 있다. 또한 아몬드 워터의 화학 성분이 하운드의 후각을 혼란시킨다는 보고가 있다.`,
+    countermeasures: [
+      "절대 소음 금지 — 발소리, 말소리 최소화",
+      "아몬드 워터를 신발 아래에 발라 냄새 차단",
+      "도망치지 말 것 — 추격 본능 자극",
+      "완전 정지 후 천천히 후퇴",
+    ]
+  },
+  {
+    id: 4, name: "스킨워커", nameEn: "Skin-Walkers",
+    threat: "inhuman", habitat: "레벨 1, 4, 사무 공간",
+    size: "인간 크기", weight: "불명",
+    desc: "죽은 방랑자의 피부를 뒤집어쓰고 그 사람인 척 행동하는 존재. 완벽하게 인간을 모사하며 팀원을 의심하게 만든다. 눈의 색이 약간 다르다는 것이 유일한 식별 방법.",
+    detail: `스킨워커는 백룸에서 가장 지능적인 엔티티 중 하나다. 죽은 방랑자의 외피를 흡수하여 그 모습을 완벽하게 재현하며, 기억과 음성까지 복제한다. 팀 내에 침투해 혼란을 일으키고 방랑자들을 위험한 구역으로 유도하는 전술을 구사한다.
+
+식별 방법: 눈의 홍채 색이 원래 사람과 미묘하게 다르며, 아몬드 워터를 마시는 것을 거부한다. 또한 오래된 기억에 대해 구체적인 질문을 하면 답변이 모호해진다.`,
+    countermeasures: [
+      "팀원 정기 신원 확인 — 비밀 암호 설정",
+      "아몬드 워터 거부 시 즉시 의심",
+      "눈 색상 확인 — 미묘한 차이 있음",
+    ]
+  },
+  {
+    id: 5, name: "캐스크", nameEn: "Casks",
+    threat: "inhuman", habitat: "레벨 7, 수중 환경",
+    size: "버스 크기 이상", weight: "측정 불가",
+    desc: "수중에 서식하는 거대한 엔티티. 형체가 불분명하며 수면 아래에서 유영하다가 방랑자를 심해로 끌어당긴다. 초음파로 방랑자를 마비시킨다는 보고가 있다.",
+    detail: `캐스크는 레벨 7의 최상위 포식자다. 정확한 외형이 파악된 바 없으며, 어두운 물속에서 흐릿한 윤곽만이 관측된다. 수면 아래 수 미터 깊이에서도 물 위의 파동을 감지할 수 있으며, 방랑자가 물에 손이나 발을 담그는 것만으로도 위치를 파악한다.`,
+    countermeasures: [
+      "물 접촉 최소화",
+      "수면에 진동을 일으키지 말 것",
+      "캐스크가 있는 물의 온도는 급격히 차가워짐 — 경고 신호",
+    ]
+  },
+  {
+    id: 6, name: "데스모스", nameEn: "Deathmoths",
+    threat: "hostile", habitat: "레벨 8, 동굴 환경",
+    size: "날개폭 약 1.5m", weight: "약 15kg",
+    desc: "거대한 나방 형태의 엔티티. 단독 행동은 위협이 낮지만 군집으로 행동하며, 체온을 감지하여 방랑자를 추적한다. 날개에서 내리는 분말은 마취 효과가 있다.",
+    detail: `데스모스는 나방을 연상시키지만 크기가 훨씬 크고 공격적이다. 날개 패턴이 해골과 유사하며 이름의 유래가 되었다. 군집으로 행동할 때는 집단 지능을 발휘하여 방랑자를 포위하는 전술을 구사한다. 날개에서 떨어지는 분말은 점막에 닿으면 즉각 마취 효과를 일으킨다.`,
+    countermeasures: [
+      "날개 분말 흡입 방지 — 마스크 착용",
+      "파이어 소금 점화로 군집 이탈 유도",
+      "단독 개체는 날카로운 도구로 방어 가능",
+    ]
+  },
+  {
+    id: 7, name: "페이스리스", nameEn: "The Faceless",
+    threat: "inhuman", habitat: "레벨 5, 어두운 레벨 전반",
+    size: "약 2.5m", weight: "측정 불가",
+    desc: "인간 형태이지만 얼굴에 아무것도 없는 존재. 매끄럽고 창백한 피부만이 얼굴 부분을 가리고 있다. 소리를 내지 않고 이동하며 방랑자의 얼굴을 '수집'한다.",
+    detail: `페이스리스는 침묵 속에 존재하는 가장 소름 끼치는 엔티티 중 하나다. 이 존재에게 얼굴을 도난당한 방랑자의 사례가 기록되어 있으며, 그 희생자들은 이후 다른 방랑자에 의해 새로운 페이스리스로 관찰되었다. 얼굴을 훔치는 메커니즘은 아직 해명되지 않았다.`,
+    countermeasures: [
+      "눈을 마주치면 안 됨 — 얼굴 자체를 보지 말 것",
+      "거울로 우회 확인 권장",
+      "아몬드 워터를 얼굴에 바르면 일시적 보호 효과",
+    ]
+  },
+  {
+    id: 8, name: "인형사", nameEn: "The Puppeteer",
+    threat: "inhuman", habitat: "레벨 5, 호텔 환경",
+    size: "약 3m", weight: "측정 불가",
+    desc: "거미처럼 가느다란 긴 팔을 가진 존재. 방랑자를 물리적으로 잡아 마리오네트처럼 조종한다. 조종당하는 방랑자는 의식은 있지만 몸을 제어할 수 없다.",
+    detail: `인형사는 레벨 5의 가장 특이한 엔티티다. 최소 8~10개의 긴 팔을 가지고 있으며, 각 팔 끝에는 갈고리처럼 휘어진 손이 있다. 방랑자를 잡으면 신경계에 직접적으로 접속하여 신체를 완전히 제어한다. 조종당하는 방랑자는 완전히 의식이 있는 상태에서 자신의 팀원을 공격하도록 강요된다.`,
+    countermeasures: [
+      "인형사에 잡힌 팀원은 즉시 분리",
+      "갈고리 팔 아래로 미끄러져 탈출",
+      "전기 충격 장치로 일시적 마비 가능",
+    ]
+  },
+  {
+    id: 9, name: "그림자 인간", nameEn: "Shadow People",
+    threat: "neutral", habitat: "모든 레벨의 그림자 영역",
+    size: "인간 크기", weight: "불명",
+    desc: "3차원 그림자처럼 보이는 인간형 존재. 벽면을 자유롭게 이동하며 직접적인 공격은 하지 않지만 존재 자체가 정신 오염을 유발한다.",
+    detail: `그림자 인간은 백룸 전역에서 목격되는 존재다. 실체가 없는 것처럼 보이지만 특정 각도에서는 3차원적인 형태를 갖는다. 이들은 적대적이지 않으며 주로 방랑자를 관찰하는 행동만 한다. 다만 오래 바라보면 심각한 정신 오염 증상이 나타난다. 일부 방랑자들은 그림자 인간이 백룸의 '과거 방랑자들의 잔상'이라고 주장한다.`,
+    countermeasures: [
+      "5초 이상 응시 금지 — 정신 오염",
+      "인지했다면 시선 돌리고 이동",
+      "메모리 주스로 정신 오염 완화 가능",
+    ]
+  },
+  {
+    id: 10, name: "위생병", nameEn: "The Sanitation Department",
+    threat: "neutral", habitat: "레벨 4, 사무 공간",
+    size: "인간 크기", weight: "약 60~80kg",
+    desc: "청소부 복장을 한 엔티티. 방랑자에게 적대적이지 않으며, 오히려 길을 안내해주는 행동을 보인다. 다만 특정 조건에서 돌변할 수 있다.",
+    detail: `위생병은 레벨 4에서 주로 목격되는 중립 엔티티다. 1980년대 스타일의 청소부 유니폼을 입고 있으며, 실제로 레벨 내 쓰레기를 청소하는 행동을 한다. 방랑자에게 길을 알려주거나 음식을 나누어 주는 경우도 있다. 하지만 레벨 내 물건을 무단으로 가져가거나 환경을 오염시키면 즉각 공격적으로 변한다.`,
+    countermeasures: [
+      "레벨 내 물건 무단 반출 금지",
+      "레벨 환경 파괴 행위 금지",
+      "호의를 보여오면 수용하되 뒤를 보이지 말 것",
+    ]
+  },
+  {
+    id: 11, name: "차원 포식자", nameEn: "Dimensional Predators",
+    threat: "inhuman", habitat: "레벨 전이 구간",
+    size: "측정 불가", weight: "측정 불가",
+    desc: "레벨과 레벨 사이의 전이 공간에 서식하는 존재. 레벨을 이동할 때만 감지되며, 전이 중인 방랑자를 차원 사이에 영구히 가두는 능력을 가진다.",
+    detail: `차원 포식자는 레벨 전이 과정에서만 위협이 되는 존재다. 일반적인 공간에서는 관측이 불가능하지만, 노클립이나 계단, 문을 통해 레벨을 이동하는 순간 잠깐의 '전이 공간'에서 활성화된다. 전이 도중 갑자기 이유 없이 멈추거나 뒤를 돌아보면 이 존재에 의해 포획될 수 있다.`,
+    countermeasures: [
+      "레벨 전이 중 절대 정지 금지",
+      "전이 중 뒤를 보지 말 것",
+      "빠른 전이가 안전 — 망설임 금물",
+    ]
+  },
+  {
+    id: 12, name: "스턴블러", nameEn: "Stumblers",
+    threat: "hostile", habitat: "레벨 5, 어두운 복도",
+    size: "약 3m", weight: "측정 불가",
+    desc: "비틀거리며 이동하는 인간형 존재. 불규칙한 동작 때문에 예측이 불가능하다. 피부가 없어 근육이 노출되어 있으며, 접촉 시 신경 독소를 분비한다.",
+    detail: `스턴블러는 비틀거리는 특이한 이동 방식으로 이름 붙여졌다. 겉으로 보기에 불안정해 보이지만 실제로는 매우 빠른 속도를 낼 수 있다. 이 불안정한 이동이 사실은 방랑자를 안심시키기 위한 의도적인 행동이라는 분석도 있다. 접촉 시 피부에서 분비되는 신경 독소는 30분 내 마비 증상을 유발한다.`,
+    countermeasures: [
+      "직접 접촉 절대 금지",
+      "불규칙한 경로 예측 불가 — 거리 유지 우선",
+      "독소 접촉 시 즉시 해당 부위 아몬드 워터로 세척",
+    ]
+  },
+  {
+    id: 13, name: "레드 데스", nameEn: "Red Deaths",
+    threat: "inhuman", habitat: "레벨 11, 붉은 환경",
+    size: "약 4m", weight: "측정 불가",
+    desc: "붉은 안개처럼 공간을 채우다가 갑자기 물리적 형태로 응집하는 존재. 공간 자체와 구분이 어렵다. 레벨 11의 붉은색이 이들이 응고된 형태라는 설이 있다.",
+    detail: `레드 데스는 레벨 11을 특징짓는 엔티티다. 이들은 레벨의 붉은 환경 자체가 이들의 분산된 형태인지도 모른다는 추정이 있다. 갑자기 공간의 붉은 안개가 응집하면서 사람 형태를 취하고 방랑자를 공격한다. 공격받으면 몸이 붉게 물들기 시작하다가 레드 데스의 일부로 흡수된다.`,
+    countermeasures: [
+      "레벨 11 체류 시간 최소화",
+      "붉은 안개가 짙어지면 즉시 탈출",
+    ]
+  },
+  {
+    id: 14, name: "밴시", nameEn: "The Wailing Woman",
+    threat: "hostile", habitat: "레벨 5, 호텔 레벨",
+    size: "인간 크기", weight: "불명",
+    desc: "오래된 드레스를 입은 여인 형태의 존재. 절규하는 소리를 내며, 그 소리에 노출된 방랑자는 즉각 귀를 막지 않으면 고막이 파열된다. 소리 자체가 공격 수단이다.",
+    detail: `밴시는 레벨 5의 호텔 복도에서 자주 목격된다. 항상 등을 돌리고 서 있다가 방랑자가 접근하면 돌아서며 절규한다. 이 소리는 단순한 소음이 아니라 특정 주파수로 진동하여 내이를 손상시킨다. 귀마개나 헬멧으로 충분히 보호되지 않으며, 가장 효과적인 방법은 소리가 들리기 전 후퇴하는 것이다.`,
+    countermeasures: [
+      "등이 보이는 형태의 여성형 존재 발견 시 조용히 후퇴",
+      "소리가 들리기 시작하면 양 귀를 최대한 막을 것",
+      "소리 범위 약 15m — 그 이상 거리 유지",
+    ]
+  },
+  {
+    id: 15, name: "미믹", nameEn: "Mimics",
+    threat: "hostile", habitat: "레벨 4, 9, 안전해보이는 레벨",
+    size: "다양", weight: "다양",
+    desc: "물건 또는 환경 구조물로 위장하는 엔티티. 의자, 책상, 문, 심지어 아몬드 워터 캔으로 위장하기도 한다. 방랑자가 접촉하는 순간 공격한다.",
+    detail: `미믹은 다양한 형태로 위장하는 카멜레온 같은 엔티티다. 가장 위험한 것은 생존에 필요한 물품으로 위장하는 경우다. 특히 아몬드 워터 캔 형태의 미믹이 보고되어 있어, 물건을 집기 전 확인이 필수적이다. 미믹이 위장한 물건과 실제 물건을 구분하는 방법은 약간 잘못된 비율과 소재 질감의 차이다.`,
+    countermeasures: [
+      "물건을 집기 전 두드려보고 무게 확인",
+      "너무 눈에 띄게 놓인 물품 의심",
+      "미믹 물건은 보통 약간 빛나거나 색이 다름",
+    ]
+  },
+  {
+    id: 16, name: "클라우드 오브 다크니스", nameEn: "Cloud of Darkness",
+    threat: "inhuman", habitat: "레벨 6, 레벨 16",
+    size: "가변적", weight: "없음",
+    desc: "의식이 있는 것으로 추정되는 어둠 그 자체. 빛을 적극적으로 소멸시키며 공간 전체를 완전한 암흑으로 만든다. 어둠 속에서 스마일러들을 소환하는 능력이 있다.",
+    detail: `클라우드 오브 다크니스는 단순히 어두운 것이 아니라, 적극적으로 빛을 없애는 능력을 가진 존재다. 방랑자가 가진 광원을 하나씩 소멸시키며 완전한 어둠을 만들어낸다. 완전한 어둠이 달성되면 대규모의 스마일러 군집이 소환된다. 네온 플루이드는 효과가 있지만, 충분한 양이 없으면 일시적인 효과에 그친다.`,
+    countermeasures: [
+      "복수의 광원 소지 — 하나가 꺼져도 대체 가능하게",
+      "네온 플루이드 대량 소지",
+      "어둠이 움직이는 것을 보면 도망치지 말고 즉시 최대 광원 점화",
+    ]
+  },
+  {
+    id: 17, name: "워처", nameEn: "The Watcher",
+    threat: "neutral", habitat: "모든 레벨",
+    size: "눈만 보임", weight: "불명",
+    desc: "벽, 천장, 바닥 어디서든 나타나는 단 하나의 거대한 눈. 적극적인 공격은 하지 않지만 관찰당하는 느낌이 방랑자의 정신을 서서히 갉아먹는다.",
+    detail: `워처는 백룸 어디에서나 나타날 수 있는 불가사의한 존재다. 단 하나의 완전한 눈만이 나타나며, 구체적인 몸통은 관찰된 바 없다. 이 눈은 방랑자를 항상 바라보며, 눈을 맞추면 몇 시간 동안 그 눈만 보이는 시각 오염이 발생한다. 워처가 관찰하는 방랑자는 이후 다른 엔티티들의 표적이 되기 쉽다는 보고가 있다.`,
+    countermeasures: [
+      "눈을 직접 바라보지 말 것",
+      "워처를 인지했다면 자연스럽게 이동",
+      "메모리 주스로 시각 오염 증상 완화",
+    ]
+  },
+  {
+    id: 18, name: "레이스", nameEn: "Wraiths",
+    threat: "hostile", habitat: "레벨 3, 전기 환경",
+    size: "인간 크기", weight: "없음",
+    desc: "전기 배선 속에 깃든 에너지 형태의 존재. 전선을 통해 이동하며, 방랑자가 금속을 만지면 전기 충격 형태로 공격한다. 아날로그 기기에는 영향을 미치지 않는다.",
+    detail: `레이스는 전기 시스템에 기생하는 에너지 존재다. 물리적인 형태가 없어 일반 수단으로 공격이 불가능하다. 전기가 없는 환경에서는 활동이 크게 제한된다. 배터리 기반의 전자 기기는 이들에게 '먹이'가 되므로 이 레벨에서는 아날로그 장비 사용이 권장된다.`,
+    countermeasures: [
+      "모든 금속 접촉 금지",
+      "아날로그 기기만 사용",
+      "고무 장갑 착용 권장",
+      "전기 기기 전원 끔",
+    ]
+  },
+  {
+    id: 19, name: "클라임버", nameEn: "Climbbers",
+    threat: "hostile", habitat: "레벨 8, 동굴 레벨",
+    size: "약 1.5m", weight: "약 30kg",
+    desc: "천장에 거꾸로 매달려 이동하는 사족보행 엔티티. 위에서 내려다보며 방랑자를 추적하다가 수직으로 낙하하여 공격한다. 아래에서는 감지하기 어렵다.",
+    detail: `클라임버는 천장에 붙어 이동하는 독특한 능력을 가진 엔티티다. 발에는 강력한 흡착 기관이 있어 어떤 재질의 천장에도 붙을 수 있다. 방랑자를 추적할 때 소리를 내지 않으며, 공격 직전에만 발의 흡착력을 해제하고 낙하한다. 위를 자주 확인하는 습관이 생존의 핵심이다.`,
+    countermeasures: [
+      "이동 중 주기적으로 천장 확인",
+      "천장의 긁힌 자국 — 클라임버 경로 흔적",
+      "뛰어 이동 금지 — 충격음이 클라임버를 유인",
+    ]
+  },
+  {
+    id: 20, name: "글리치", nameEn: "Glitches",
+    threat: "neutral", habitat: "레벨 전이 구간, 불안정 레벨",
+    size: "가변적", weight: "없음",
+    desc: "공간이 깨지고 텍스처가 반복되는 것처럼 보이는 현상 자체가 의식을 가진 존재. 처음에는 버그처럼 보이지만, 방랑자와 소통하려는 시도를 한다.",
+    detail: `글리치는 백룸의 공간적 오류가 의식을 가지게 된 존재로 추정된다. 처음에는 단순한 공간적 이상(벽이 깜박이거나 바닥이 반복되는 패턴) 처럼 보이지만, 자세히 관찰하면 의도적인 패턴이 있음을 알 수 있다. 일부 방랑자들은 글리치와 모스 부호 방식으로 소통하는 데 성공했다고 보고하며, 이들이 실제로 탈출 경로를 안내해준 사례도 있다.`,
+    countermeasures: [
+      "글리치를 무시하지 말 것 — 정보를 담고 있을 수 있음",
+      "반복 패턴 메모 — 모스 부호 해독 시도",
+      "직접 접촉 시 일시적 시간 왜곡 발생",
+    ]
+  },
+  {
+    id: 21, name: "베이스맨트 엔티티", nameEn: "The Basement Entity",
+    threat: "inhuman", habitat: "레벨 지하 구역",
+    size: "측정 불가", weight: "측정 불가",
+    desc: "레벨의 가장 낮은 지하에 서식하는 거대한 존재. 실제로 본 방랑자들은 아무도 살아 돌아오지 않았으며, 소수의 생존자들은 눈을 감고 탈출에 성공했다.",
+    detail: `베이스맨트 엔티티에 대한 정보는 극히 제한적이다. 지하로 내려가는 계단 끝에 존재하는 것으로 추정되며, 이 존재의 숨소리만으로도 방랑자의 정신이 붕괴된다고 한다. M.E.G. 자료에는 이 엔티티의 포식 방식이 육체가 아닌 의식을 직접 삼키는 것이라고 기록되어 있다.`,
+    countermeasures: [
+      "지하로 내려가지 말 것",
+      "발 아래 계단이 느껴지면 즉시 올라올 것",
+    ]
+  },
+  {
+    id: 22, name: "노이즈 머신", nameEn: "Noise Machines",
+    threat: "hostile", habitat: "레벨 3, 전기 환경",
+    size: "약 1m", weight: "약 50kg",
+    desc: "전기 기계처럼 생긴 엔티티. 스스로 이동하며 접근하면 고음 소음을 방출하여 방랑자의 신경계를 마비시킨다. 외관으로는 실제 기계와 구분이 어렵다.",
+    detail: `노이즈 머신은 사각형 형태의 전기 기계처럼 보이지만, 실제로는 이동 능력이 있는 엔티티다. 접근하면 극도로 높은 주파수의 소음을 방출하여 내이의 균형 감각을 교란시키고 근육 경련을 일으킨다. 멀리서 보면 일반 변압기나 배전반과 구분이 어렵지만, 유심히 보면 바닥에 이동 흔적이 있다.`,
+    countermeasures: [
+      "고주파음 감지 시 즉시 160m 이상 이탈",
+      "기계가 이동한 흔적 — 노이즈 머신 경고 신호",
+      "귀마개 착용으로 피해 일부 완화",
+    ]
+  },
+  {
+    id: 23, name: "어댑터", nameEn: "Adapters",
+    threat: "neutral", habitat: "다양한 레벨",
+    size: "가변적", weight: "불명",
+    desc: "주변 환경을 흡수하여 외형을 변화시키는 엔티티. 레벨의 배경과 완전히 동화되어 있어 육안으로는 발견이 거의 불가능하다.",
+    detail: `어댑터는 백룸의 가장 불가사의한 엔티티 중 하나다. 주변 환경을 실시간으로 흡수하여 완벽하게 배경과 동화된다. 인간형이지만 벽 색깔과 재질을 완전히 복사할 수 있다. 이들을 감지하는 유일한 방법은 공기 온도 변화(어댑터 주변 2도 가량 온도 상승)와 미세한 냄새 변화다.`,
+    countermeasures: [
+      "온도 변화 감지 — 약 2도 상승 시 주의",
+      "냄새 변화 감지 시 주변 두드려보기",
+      "적대적이지 않을 수 있음 — 움직이지 않으면 관망",
+    ]
+  },
+  {
+    id: 24, name: "엔드레스 어드벤처러", nameEn: "Endless Adventurers",
+    threat: "safe", habitat: "레벨 4, 거점 레벨",
+    size: "인간 크기", weight: "불명",
+    desc: "오랫동안 백룸을 돌아다니다 인간성을 일부 잃은 방랑자가 변화한 형태. 다른 방랑자들에게 정보를 제공하는 경우도 있지만, 예측 불가능한 행동을 보인다.",
+    detail: `엔드레스 어드벤처러는 엄밀히 말해 완전한 엔티티가 아닌, 오래된 방랑자들의 변화된 형태다. 수년 혹은 수십 년을 백룸에서 보낸 이들은 점차 인간성이 희미해지며 반(半)엔티티 상태가 된다. 백룸의 지리와 엔티티에 대한 방대한 지식을 가지고 있어 귀중한 정보원이 되기도 하지만, 갑작스럽게 행동이 바뀌는 경우가 있어 주의가 필요하다.`,
+    countermeasures: [
+      "유용한 정보를 줄 수 있으나 맹신 금지",
+      "음식이나 아몬드 워터를 먼저 제공하면 우호적 반응",
+      "갑작스런 무감각한 표정 — 즉시 거리 확보",
+    ]
+  },
+  {
+    id: 25, name: "카멜레온 크리처", nameEn: "Chameleon Creatures",
+    threat: "hostile", habitat: "레벨 9, 교외 레벨",
+    size: "약 1.2m", weight: "약 25kg",
+    desc: "빛 굴절 능력으로 투명하게 보이는 사족보행 엔티티. 완전히 투명하여 시각으로 탐지 불가. 이동 시 발자국 소리와 주변 공기 왜곡으로만 위치 파악 가능.",
+    detail: `카멜레온 크리처는 완전한 투명성을 가진 엔티티다. 광자를 굴절시켜 주변 배경이 그대로 투과되어 보이도록 만든다. 발소리와 이동 시 주변 잔디나 카펫의 눌림 현상으로만 위치를 파악할 수 있다. 발자국 흔적을 추적하면 위치를 예측할 수 있다.`,
+    countermeasures: [
+      "바닥의 보이지 않는 발자국 주시",
+      "먼지나 가루를 바닥에 뿌려 발자국 시각화",
+      "이동 소리 방향 예측 후 파이어 소금 투척",
+    ]
+  },
+  {
+    id: 50, name: "밤의 방문객", nameEn: "Night Visitors",
+    threat: "hostile", habitat: "레벨 9, 레벨 188",
+    size: "인간 크기", weight: "불명",
+    desc: "레벨 내 '밤'에 해당하는 어두운 시간대에만 활성화되는 엔티티. 창문을 두드리고 문을 긁는 소리를 낸다. 문이나 창문을 열면 내부로 진입해 공격한다.",
+    detail: `밤의 방문객은 레벨 9와 같이 낮/밤 주기가 있는 레벨에서 야간에 활성화된다. 이들은 집 안이나 방 안에 숨어 있는 방랑자를 찾아와 문과 창문을 두드린다. 목소리는 아는 사람처럼 들리도록 흉내 내며, 방랑자가 문을 열도록 유도한다. 개방된 공간에서는 물러서는 경향이 있다.`,
+    countermeasures: [
+      "야간 문/창문 절대 개방 금지",
+      "낮(밝은 시간)에 이동, 야간 고정",
+      "목소리가 아는 사람처럼 들려도 무시",
+    ]
+  },
+  {
+    id: 100, name: "더 킹", nameEn: "The King",
+    threat: "inhuman", habitat: "레벨 999, 최심부",
+    size: "측정 불가", weight: "측정 불가",
+    desc: "백룸의 최심부에 존재하는 것으로 추정되는 존재. M.E.G. 기밀 문서에 단 한 번 언급되며, 이 존재와 조우한 방랑자는 기록이 남지 않는다.",
+    detail: `더 킹은 M.E.G. 오메가 등급 기밀에 단 두 문장으로만 언급된 존재다: "그것은 백룸을 만들었거나, 아니면 백룸이 그것을 만들었다. 어느 쪽이든 그것을 찾는 것은 당신의 마지막 행동이 될 것이다." 이 이상의 정보는 현재 확인된 바 없다.`,
+    countermeasures: [
+      "존재 자체를 찾으려 하지 말 것",
+      "더 킹에 대해 다른 방랑자와 이야기하지 말 것 — 주의 끌림 위험",
+    ]
+  },
+  {
+    id: 110, name: "블러드 크롤러", nameEn: "Blood Crawlers",
+    threat: "hostile", habitat: "레벨 11, 붉은 환경",
+    size: "약 0.5m", weight: "약 5kg",
+    desc: "거미처럼 기어다니는 소형 엔티티. 작은 크기로 어디든 숨을 수 있으며, 집단으로 행동한다. 물린 부위에서 피가 멈추지 않는 독이 주입된다.",
+    detail: `블러드 크롤러는 레벨 11의 붉은 환경에서 뿐만 아니라 혈흔이 많은 모든 레벨에서 목격된다. 이들은 혈액을 감지하여 모여들며, 방랑자가 상처를 입으면 수십 마리씩 몰려든다. 물린 부위에서 혈액 응고가 방해되는 독이 주입되므로 즉각적인 아몬드 워터 처치가 필요하다.`,
+    countermeasures: [
+      "상처 발생 시 즉시 아몬드 워터로 세척",
+      "파이어 소금 연기로 군집 이탈 유도",
+      "혈흔을 따라가지 말 것 — 블러드 크롤러 군집 지표",
+    ]
+  },
+  {
+    id: 120, name: "리핑 엔티티", nameEn: "Ripping Entities",
+    threat: "inhuman", habitat: "레벨 2, 레벨 12",
+    size: "약 3m", weight: "측정 불가",
+    desc: "배관에서 기어나오는 길고 유연한 형태의 엔티티. 금속을 마치 종이처럼 찢으며, 물리적 장벽에 의한 방어가 거의 불가능하다.",
+    detail: `리핑 엔티티는 레벨 2의 배관 시스템을 서식지로 하는 존재다. 금속 배관 내부를 이동하며, 밖으로 나올 때는 배관을 찢고 나온다. 이 때문에 '리핑'이라는 이름이 붙었다. 방어 수단이 매우 제한적이며, 가장 효과적인 대응은 배관이 파열되기 전 소리를 감지하고 도망치는 것이다.`,
+    countermeasures: [
+      "배관 내부에서 나는 긁는 소리 — 즉시 이탈",
+      "배관이 부풀어 오르면 파열 직전 신호",
+      "빠른 도주 이외의 대응 방법 없음",
+    ]
+  },
+  {
+    id: 130, name: "싱어", nameEen: "The Singer",
+    threat: "hostile", habitat: "레벨 13, 도서관",
+    size: "인간 크기", weight: "불명",
+    desc: "도서관 레벨에서 아름다운 목소리로 노래하는 엔티티. 노래에 이끌려 다가가면 자신도 모르게 '책'이 되어 도서관에 편입된다. 이미 3명의 방랑자가 편입된 것으로 추정.",
+    detail: `싱어는 레벨 13 도서관의 가장 위험한 엔티티다. 아름답고 매혹적인 목소리로 방랑자를 유인하며, 그 소리에 이끌려 따라간 방랑자들은 '도서관의 일부'가 되는 것으로 알려졌다. 이들이 편입된 것으로 추정되는 책들은 방랑자들의 실제 기억이 담긴 것처럼 보인다.`,
+    countermeasures: [
+      "어떤 목소리도 따라가지 말 것",
+      "귀마개 사용 — 노래 소리 차단",
+      "소리 나는 방향의 반대로 이동",
+    ]
+  },
+  {
+    id: 200, name: "스컬커", nameEn: "Skulkers",
+    threat: "hostile", habitat: "레벨 전반",
+    size: "약 1.8m", weight: "약 80kg",
+    desc: "완벽한 어둠 속에서만 가시적인 인간형 엔티티. 빛이 있을 때는 완전히 투명하고, 어둠 속에서만 칙칙한 회색 피부로 보인다. 스마일러보다 월씬 지능적이고 위험하다.",
+    detail: `스컬커는 스마일러의 상위 엔티티로 볼 수 있다. 스마일러가 단순히 어둠에 잠복하는 것에 비해, 스컬커는 적극적으로 광원을 제거하고 방랑자를 어둠으로 유도한다. 함정을 설치하고 경로를 차단하는 등 계획적인 행동을 보인다.`,
+    countermeasures: [
+      "광원 제거 시도 감지 시 즉시 다중 광원 점화",
+      "스컬커 조우 — 전방위 빛 발산 유지",
+      "함정 징후(가로막힌 경로, 손전등 고장) 시 반대 방향 이탈",
+    ]
+  },
+  {
+    id: 220, name: "아이언 필러", nameEn: "Iron Pillars",
+    threat: "hostile", habitat: "레벨 14, 주차장",
+    size: "기둥 형태", weight: "측정 불가",
+    desc: "주차장 레벨의 기둥으로 위장하는 엔티티. 방랑자가 지나칠 때 갑자기 기둥 형태를 무너뜨려 잡아당긴다. 기둥 색이 약간 더 어둡고 기울어져 있다는 식별 단서가 있다.",
+    detail: `아이언 필러는 레벨 14의 주차장 기둥을 모방하는 엔티티다. 정지 상태에서는 실제 기둥과 거의 구분이 어렵다. 방랑자가 2미터 이내로 접근하면 기둥 표면이 갑자기 열리며 내부의 촉수가 뻗어 나온다. 이 촉수는 매우 강력하여 한번 잡히면 탈출이 거의 불가능하다.`,
+    countermeasures: [
+      "기둥 사이를 이동할 때 중앙 경로 유지",
+      "약간 기울어지거나 색이 다른 기둥 의심",
+      "기둥을 미리 두드려 공명음으로 실체 확인",
+    ]
+  },
+  {
+    id: 240, name: "리퍼", nameEn: "The Reaper",
+    threat: "inhuman", habitat: "레벨 임종 구간",
+    size: "약 2.5m", weight: "불명",
+    desc: "죽음을 앞둔 방랑자 앞에만 나타나는 존재. 거울처럼 검은 표면을 가진 형체이며, 이 존재가 나타나면 방랑자에게는 탈출의 기회가 마지막으로 주어진다고 한다.",
+    detail: `리퍼는 백룸에서 가장 미스터리한 존재 중 하나다. 심각하게 부상당하거나 정신이 극한에 달한 방랑자에게만 나타난다고 알려졌다. 이 존재가 나타났을 때 방랑자가 눈을 마주치면 '마지막 탈출 경로'가 주어진다는 전설이 있지만, 실제로 확인된 사례는 없다. 일부는 이것이 백룸 자체의 일종의 자비라고 해석한다.`,
+    countermeasures: [
+      "이 존재가 보인다면 당신의 상태가 임계치에 달한 것",
+      "즉시 안전 구역으로 이동 시도",
+    ]
+  },
+];
+
+// ============================================================
+// ITEMS DATA
+// ============================================================
+const ITEMS = [
+  {
+    name: "아몬드 워터", nameEn: "Almond Water",
+    rarity: "일반 (Common)", rarityClass: "tag-common",
+    icon: "💧",
+    effect: "정신 안정 및 갈증 해소. 백룸에서 가장 필수적인 생존 물품. 달콤한 아몬드 향이 특징이며, 일부 엔티티를 퇴치하거나 독소를 해독하는 효과도 있다.",
+    detail: `아몬드 워터는 백룸에서 가장 흔하게 발견되는 소비 물품이다. 자판기, 파이프, 웅덩이 등 다양한 곳에서 발견되며, 방랑자들의 생명선이다. 정신 안정 효과가 있어 정신 오염을 늦추며, 하운드의 후각을 혼란시키는 화학 성분을 포함한다. 또한 블러드 크롤러 독소의 응급 해독제로도 사용된다.`,
+    storage: "직사광선 차단, 밀봉 유리 또는 특수 플라스틱 용기 보관",
+    caution: "레벨 내 파이프나 정수기에서 나오는 정체불명 유체와 혼동 주의"
+  },
+  {
+    name: "로열 젤리", nameEn: "Royal Jelly",
+    rarity: "귀중 (Rare)", rarityClass: "tag-rare",
+    icon: "🍯",
+    effect: "신체 능력을 급격히 향상시키는 황금색 액체. 힘, 속도, 지구력이 일시적으로 급상승하지만 과다 복용 시 인간성을 잃고 괴물화되는 부작용이 있다.",
+    detail: `로열 젤리는 백룸에서 가장 위험한 아이템 중 하나이자 가장 강력한 것이기도 하다. 엔티티로부터 도망칠 때나 물리적으로 불가능해 보이는 장벽을 넘어야 할 때 매우 효과적이다. 다만 1회 복용량(약 5ml)을 초과하면 서서히 인간의 의식이 희미해지며, 복용 횟수가 늘어날수록 엔티티화가 진행된다.`,
+    storage: "밀봉 유리병 보관, 체온 이하 온도 유지",
+    caution: "1회 복용량 엄수(5ml 이하). 총 3회 이상 복용 절대 금지"
+  },
+  {
+    name: "메모리 주스", nameEn: "Memory Juice",
+    rarity: "일반 (Common)", rarityClass: "tag-common",
+    icon: "🧪",
+    effect: "백룸의 정신 오염으로 유실되어가는 현실의 기억을 강제로 붙잡아두는 청색 특수 유체. 자신이 누구인지, 현실 세계에 무엇이 있는지 기억을 유지시켜 준다.",
+    detail: `백룸에 장기 체류하면 현실 세계에 대한 기억이 점차 희미해지는 '현실 기억 침식' 현상이 발생한다. 메모리 주스는 이 현상을 늦추거나 부분적으로 역전시킨다. 맛은 매우 쓰고 뒤에 설탕 맛이 남는다. 매일 소량(약 10ml)을 복용하면 기억 침식을 크게 늦출 수 있다.`,
+    storage: "직사광선 차단, 서늘한 곳 보관",
+    caution: "과다 복용 시 환각 및 과거 기억과 현재 인식의 혼란 유발"
+  },
+  {
+    name: "네온 플루이드", nameEn: "Neon Fluid",
+    rarity: "귀중 (Rare)", rarityClass: "tag-rare",
+    icon: "✨",
+    effect: "어둠 속에서 강력한 자체 발광을 하는 형광 물질. 스마일러와 클라우드 오브 다크니스를 효과적으로 퇴치할 때 사용한다.",
+    detail: `네온 플루이드는 레벨 6과 같은 어둠이 주를 이루는 레벨에서 가장 중요한 아이템이다. 활성화 시 반경 10미터를 밝힐 수 있는 강렬한 빛을 방출하며, 스마일러에게는 치명적인 효과가 있다. 사용 후에는 약 30분간 지속되므로 타이밍 관리가 중요하다.`,
+    storage: "빛 차단 불투명 용기 보관 — 빛에 노출되면 효능 저하",
+    caution: "피부 직접 접촉 시 형광 발광 지속 — 빛에 민감한 구역에서 신변 노출 위험"
+  },
+  {
+    name: "파이어 소금", nameEn: "Fire Salt",
+    rarity: "일반 (Common)", rarityClass: "tag-common",
+    icon: "🔥",
+    effect: "던지거나 마찰을 일으키면 강력한 화염 폭발을 일으키는 결정체. 호신용 무기, 방풍막 생성, 엔티티 퇴치 등 다목적으로 활용된다.",
+    detail: `파이어 소금은 백룸에서 발견되는 가장 효과적인 무기 중 하나다. 소금처럼 생긴 결정체이지만 충격을 가하면 폭발적인 화염을 발생시킨다. 데스모스 군집, 카멜레온 크리처, 노이즈 머신 퇴치에 효과적이다. 또한 강한 바람이 부는 레벨에서 임시 방풍막을 만드는 데도 사용된다.`,
+    storage: "내충격 용기 보관, 고온 환경 주의",
+    caution: "마찰이나 충격에 즉시 폭발 — 소지 중 낙하 주의"
+  },
+  {
+    name: "레벨 키", nameEn: "Level Keys",
+    rarity: "매우 귀중 (Very Rare)", rarityClass: "tag-rare",
+    icon: "🗝️",
+    effect: "특정 레벨 간의 전이를 안정적으로 수행할 수 있게 해주는 이상한 열쇠. 일반 노클립보다 훨씬 안전하고 예측 가능한 레벨 이동이 가능하다.",
+    detail: `레벨 키는 백룸의 가장 희귀한 아이템 중 하나다. 특정 레벨의 문이나 특정 위치에서 사용하면 의도한 레벨로 안전하게 이동할 수 있다. 각 레벨 키는 특정 목적지가 정해져 있으며, 사용 전 반드시 키의 표면에 새겨진 문양을 확인해야 한다. 한 번 사용하면 소멸한다.`,
+    storage: "별도 보관 — 다른 금속 물체와 함께 보관 금지",
+    caution: "잘못된 장소에서 사용 시 엉뚱한 레벨로 이동 — 사전 확인 필수"
+  },
+  {
+    name: "방랑자 가이드", nameEn: "Wanderer's Guide",
+    rarity: "보통 (Uncommon)", rarityClass: "tag-common",
+    icon: "📖",
+    effect: "이전 방랑자가 남긴 생존 노트. 레벨 지도, 엔티티 정보, 안전 경로가 기록되어 있다. 정보의 정확도는 시기와 작성자에 따라 다르다.",
+    detail: `방랑자 가이드는 다른 방랑자들이 남긴 생존 기록 모음이다. 레벨 4, 13, 188 등 거점 레벨에서 발견되는 경우가 많다. 작성된 시기에 따라 현재와 다른 정보가 포함될 수 있으므로 맹신은 금물이다. 발견 시 항상 최신 정보와 대조하고 새로운 정보를 추가하여 다음 방랑자에게 남기는 것이 생존자 문화다.`,
+    storage: "습기 차단 보관 — 내용 훼손 방지",
+    caution: "오래된 가이드는 현재 레벨 상태와 다를 수 있음"
+  },
+  {
+    name: "아이소프로필 알코올", nameEn: "Isopropyl Alcohol",
+    rarity: "보통 (Uncommon)", rarityClass: "tag-common",
+    icon: "🧴",
+    effect: "일부 엔티티의 접촉 독소를 중화하고 상처를 소독하는 데 쓰인다. 특정 엔티티의 외피에 손상을 줄 수 있다.",
+    detail: `이소프로필 알코올은 백룸의 의약품 대용으로 활용된다. 스턴블러나 블러드 크롤러의 독소에 접촉했을 때 즉각적인 세척에 사용하면 독소 흡수를 늦출 수 있다. 또한 일부 엔티티의 외피가 알코올에 취약하다는 보고가 있어 호신용으로도 사용된다.`,
+    storage: "화기로부터 격리 보관 — 인화성 높음",
+    caution: "파이어 소금과 함께 보관 절대 금지"
+  },
+  {
+    name: "초크 라인 파우더", nameEen: "Chalk Line Powder",
+    rarity: "일반 (Common)", rarityClass: "tag-common",
+    icon: "🪣",
+    effect: "이동 경로를 표시하고 보이지 않는 엔티티를 탐지하는 데 사용한다. 카멜레온 크리처나 그림자 인간의 발자국을 시각화할 수 있다.",
+    detail: `초크 라인 파우더는 단순해 보이지만 백룸 생존에 매우 유용한 아이템이다. 바닥에 뿌리면 투명 엔티티의 발자국을 시각화할 수 있어 위치 추적에 효과적이다. 또한 이동 경로 표시에 사용하면 미로 같은 레벨에서 길을 잃는 것을 방지할 수 있다.`,
+    storage: "방수 용기 보관 — 습기에 녹음",
+    caution: "너무 많은 양 사용 시 엔티티에게도 방랑자 위치 노출 가능"
+  },
+];
+
+// ============================================================
+// MEG DATA
+// ============================================================
+const MEG_DATA = [
+  {
+    title: "M.E.G. 개요",
+    content: `M.E.G.(Major Explorers Group, 주요 탐사대 그룹)는 백룸 내에서 활동하는 가장 규모가 큰 인간 조직이다. 백룸에 갇힌 방랑자들이 자발적으로 구성한 탐사 및 생존 지원 단체로, 레벨 4의 거점(Base of Operations Alpha)을 중심으로 활동한다.
+
+M.E.G.의 공식 목표는 백룸 내 생존자들의 지원, 레벨 탐사 및 지도 제작, 엔티티 연구, 그리고 현실로 돌아가는 방법의 탐색이다. 조직은 크게 탐사부, 연구부, 의료부, 정보부로 나뉜다.`
+  },
+  {
+    title: "M.E.G. 기지 목록",
+    content: `▸ 베이스 알파 (Level 4): 주요 사령부. 약 200명 상주. 의료 시설, 연구소, 보급 창고 완비.
+▸ 베이스 베타 (Level 1): 신규 방랑자 구출 전진 기지. 약 50명 상주.
+▸ 베이스 감마 (Level 9): 교외 지역 관측 기지. 야간 엔티티 연구 전담.
+▸ 베이스 델타 (Level 13): 도서관 기지. 백룸 문서 수집 및 분석 전담.
+▸ 임시 전초 기지: 레벨 2, 7, 20 등 다수 레벨에 소규모 거점 운영.`
+  },
+  {
+    title: "M.E.G. 신호 체계",
+    content: `M.E.G.가 공식적으로 사용하는 표시 시스템:
+▸ 주황색 화살표 → M.E.G. 기지 방향
+▸ 빨간 X → 위험 구역, 진입 금지
+▸ 파란 원 → 안전 구역, 물 출처
+▸ 노란 삼각형 → 엔티티 출몰 경고
+▸ 초록 점 → 다음 레벨 진출 경로 근처`
+  },
+  {
+    title: "M.E.G. 합류 방법",
+    content: `M.E.G.에 합류하려면 레벨 4를 찾아 베이스 알파로 향하면 된다. 레벨 4 내 주황색 화살표를 따라 이동하면 기지에 도달할 수 있다. 합류 후 기본 생존 훈련 2주, 레벨별 특수 훈련 4주를 이수하면 정식 탐사대원이 된다.
+
+현재 M.E.G.는 의료 인력, 전기 기술자, 심리 상담사를 특별 모집 중이다. 해당 전문 기술 보유자는 우선 합류 처리된다.`
+  },
+  {
+    title: "M.E.G. 규칙 10계명",
+    content: `1. 다른 방랑자를 해치지 말 것
+2. 공유 자원을 독점하지 말 것
+3. 엔티티를 자극하는 행동 금지
+4. 거짓 정보 유포 금지
+5. 부상당한 방랑자를 버리지 말 것
+6. 엔티티를 레벨 기지로 유인하지 말 것
+7. 로열 젤리 남용 금지
+8. 다른 방랑자의 생존 물품 동의 없이 취하지 말 것
+9. 발견한 정보는 M.E.G. 데이터베이스에 공유할 것
+10. 포기하지 말 것`
+  },
+];
+
+// ============================================================
+// LORE DATA
+// ============================================================
+const LORE_DATA = [
+  {
+    title: "비하인드 #01: 인류 문명의 복제 메커니즘",
+    content: `백룸에 존재하는 대다수의 가구, 벽지, 형광등, 사무실 기기들은 왜 20세기 말과 21세기 초의 양식을 띠고 있는가?
+
+ASYNC 연구소의 수석 연구원 제이콥 헨슨 박사가 남긴 마지막 기록:
+
+"백룸은 스스로 사고하는 거대한 차원적 유기체이다. 이 공간은 현실 세계에서 노클립되어 들어온 최초 인류의 지배적인 집단 무의식과 유년 시절의 기억을 복제하여 내부 공간을 형성했다."
+
+즉, 우리가 보는 노란 방과 빈 사무실은 백룸이 인간을 안심시키거나 혹은 가장 깊은 고독감을 유도하기 위해 인류의 문명을 어설프게 모방한 가짜 껍데기에 불과하다. 왜 1980~90년대 스타일인가에 대해서는, 대부분의 방랑자가 그 시대의 유년기 기억을 가진 세대이기 때문이라는 가설이 유력하다. 백룸은 방랑자들의 무의식 속 안전함과 익숙함을 미끼로 사용하고 있는 것이다.`
+  },
+  {
+    title: "비하인드 #02: M.E.G. 상층부의 타락과 은폐",
+    content: `방랑자들의 구원을 자처하는 최대 조직 M.E.G.의 핵심 의장단은 이미 백룸의 중심부와 소통하고 있다는 내부 고발이 있었다.
+
+익명의 전직 M.E.G. 정보부 요원이 레벨 13 도서관 벽면에 남긴 기록:
+
+"의장단은 안전한 레벨의 자원을 통제하며, 일반 방랑자들을 위험한 하위 레벨로 유도하여 탐사를 시키고 있다. 탐사 도중 죽어간 수천 명의 방랑자들의 에너지가 백룸에 공급되는 대가로, 자신들은 백룸 내부에서 영생에 가까운 수명을 누리고 있다."
+
+이것이 사실이라면 M.E.G. 베이스 알파 내 현재 체류 중인 '간부급' 인원들의 체류 기간이 일반적으로는 불가능할 정도로 길다는 사실이 설명된다. 현재 의장단 중 한 명은 최소 47년째 백룸에 있는 것으로 추정되는데, 정신 오염 없이 이것이 가능한지는 의문이다.`
+  },
+  {
+    title: "비하인드 #03: 최종 탈출구의 허상 — 루프 현상",
+    content: `수많은 레벨을 통과하고 종착지에 이르렀을 때 마주하는 '현실로 돌아가는 문'은 완벽한 시공간적 덫이다.
+
+그 문을 열고 나가면 자신이 살던 집과 가족들을 만나 평온한 삶을 되찾은 것처럼 느껴진다. 하지만 일주일이 지나면 주변 인물들의 얼굴 이목구비가 희미해지기 시작한다. 한 달이 지나면 가구들이 벽 속으로 파고든다.
+
+결국 그 공간 역시 백룸이 만들어낸 정교한 환각용 하위 레벨(일명 '가짜 현실')일 뿐이며, 방랑자는 영원히 현실로 돌아가지 못한 채 그 안에서 서서히 소멸하게 된다.
+
+진짜 현실 차원의 좌표는 인류가 처음 차원의 문을 열었던 그 순간에 이미 소실되었다는 가설이 있다. ASYNC 연구소의 마지막 문서에는 "귀환의 좌표를 복구하기 위해서는 백룸의 최심부에 닿아야 하지만, 최심부에는 귀환을 원하지 않는 존재가 있다"고 기록되어 있다.`
+  },
+  {
+    title: "비하인드 #04: 백룸의 의식 — 그것은 살아있다",
+    content: `백룸은 단순한 공간이 아니다. 여러 방랑자들의 보고에 따르면 백룸 자체가 하나의 의식 있는 존재처럼 행동한다.
+
+▸ 방랑자들은 종종 자신에게 개인적으로 맞춤화된 환경을 경험한다. 유년 시절 무서워했던 장소, 트라우마와 관련된 냄새 등이 특정 레벨에서 나타난다.
+
+▸ 백룸은 새로운 방랑자가 진입할 때 레벨 구조를 미세하게 재배치하여 그 방랑자에게 최적화된 미로를 만드는 것으로 추정된다.
+
+▸ 레벨 수가 증가하고 있다는 증거가 있다. 10년 전 M.E.G. 기록에는 없던 레벨들이 현재 확인되고 있으며, 이는 백룸이 스스로 성장하고 있음을 시사한다.
+
+▸ 가장 충격적인 것은, 방랑자들이 탈출 방법을 찾을 때마다 그 방법이 얼마 후 막히거나 변형된다는 것이다. 백룸은 탈출을 원하지 않는다.`
+  },
+  {
+    title: "비하인드 #05: 엔티티의 기원 — 변화한 인간들",
+    content: `일부 연구자들은 백룸의 엔티티들이 외부에서 온 존재가 아니라, 오랫동안 백룸에 갇혀 있다가 변화한 인간들의 최종 형태라는 가설을 제시한다.
+
+이를 뒷받침하는 증거들:
+
+▸ 스킨워커는 인간의 피부를 사용한다 — 그것은 왜 인간의 것을 원하는가?
+
+▸ 엔드레스 어드벤처러 엔티티는 인간의 특성을 아직 보유하고 있으며, 이것이 완전한 엔티티화의 중간 단계로 보인다.
+
+▸ 위생병 엔티티는 인간처럼 규칙을 가지고 있으며, 방랑자를 돕는 행동을 한다 — 인간의 직업 정체성이 남아있는 것 아닐까?
+
+▸ 가장 오래 백룸에 머문 방랑자들이 새로운 방랑자들에게는 이미 인간처럼 보이지 않는다고 보고한다.
+
+로열 젤리의 과다 복용이 이 과정을 가속화한다는 점도 주목할 만하다. 백룸은 방랑자를 서서히 자신의 일부로 만들어 가고 있는지도 모른다.`
+  },
+  {
+    title: "비하인드 #06: 노클립의 진정한 의미",
+    content: `우리는 노클립이 물리적 공간을 통과하는 현상이라고 생각한다. 하지만 ASYNC 연구소의 최후 기록은 다른 가능성을 제시한다.
+
+"노클립은 공간을 통과하는 것이 아니다. 그것은 당신이 현실의 인식 범위 밖으로 떨어지는 것이다. 백룸은 항상 현실과 겹쳐져 있었다. 다만 인간의 뇌가 그것을 인식하지 못하도록 필터링하고 있을 뿐이다."
+
+이것이 사실이라면, 백룸은 평행 차원이 아니라 우리가 사는 현실 세계의 이면이다. 사무실 건물의 낡은 복도, 오래된 학교 교실, 병원 지하실 — 이 모든 공간들 아래에 백룸이 겹쳐서 존재하고 있다.
+
+그리고 당신이 지금 이 글을 읽는 방, 그 방의 낡은 벽 한쪽이 약간 물렁해 보인다면... 확인하지 마라.`
+  },
+];
+
+// ============================================================
+// RENDER FUNCTIONS
+// ============================================================
+
+function renderLevels() {
+  const grid = document.getElementById('level-grid');
+  grid.innerHTML = '';
+  LEVELS.forEach(lv => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.dataset.class = String(lv.class);
+    card.dataset.name = lv.name + lv.nameEn + 'Level' + lv.id;
+    card.onclick = () => openLevelModal(lv);
+    card.innerHTML = `
+      <div class="card-header">
+        <div class="card-id">LVL.${lv.id}</div>
+        <div class="card-name">${lv.name}<br><small style="font-size:10px;color:var(--yellow-dark);letter-spacing:1px;">${lv.nameEn}</small></div>
+      </div>
+      <div class="card-body">
+        <div class="card-tags">
+          <span class="tag tag-class${lv.class}">CLASS ${lv.class}</span>
+          <span class="tag" style="border-color:var(--yellow-dark);color:var(--yellow-dark);">${lv.env}</span>
+        </div>
+        <div class="card-desc">${lv.desc}</div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+function renderEntities() {
+  const grid = document.getElementById('entity-grid');
+  grid.innerHTML = '';
+  ENTITIES.forEach(en => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.dataset.threat = en.threat;
+    card.dataset.name = en.name + en.nameEn + en.id;
+    card.onclick = () => openEntityModal(en);
+    const tagClass = en.threat === 'inhuman' ? 'tag-inhuman' : en.threat === 'hostile' ? 'tag-hostile' : en.threat === 'safe' ? 'tag-safe' : 'tag-neutral';
+    const threatLabel = en.threat === 'inhuman' ? '최상급 위험' : en.threat === 'hostile' ? '위험' : en.threat === 'safe' ? '무해' : '중립';
+    card.innerHTML = `
+      <div class="card-header">
+        <div class="card-id">#${String(en.id).padStart(3,'0')}</div>
+        <div class="card-name">${en.name}<br><small style="font-size:10px;color:var(--yellow-dark);letter-spacing:1px;">${en.nameEn}</small></div>
+      </div>
+      <div class="card-body">
+        <div class="card-tags">
+          <span class="tag ${tagClass}">${threatLabel}</span>
+          <span class="tag" style="border-color:var(--yellow-dark);color:var(--yellow-dark);font-size:9px;">${en.habitat}</span>
+        </div>
+        <div class="card-desc">${en.desc}</div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+function renderItems() {
+  const c = document.getElementById('items-container');
+  c.innerHTML = '';
+  ITEMS.forEach(item => {
+    const el = document.createElement('div');
+    el.className = 'item-card';
+    el.innerHTML = `
+      <div class="item-name">${item.icon} ${item.name}</div>
+      <div class="item-name-en">${item.nameEn}</div>
+      <span class="item-rarity ${item.rarityClass}">${item.rarity}</span>
+      <div class="item-body">
+        <p><strong style="color:var(--yellow);font-size:11px;letter-spacing:1px;">◆ 효능</strong><br>${item.effect}</p>
+        <p style="margin-top:10px;"><strong style="color:var(--yellow);font-size:11px;letter-spacing:1px;">◆ 상세</strong><br>${item.detail}</p>
+        <p style="margin-top:10px;"><strong style="color:var(--yellow-dark);font-size:11px;letter-spacing:1px;">▸ 보관법</strong> ${item.storage}</p>
+        <p style="margin-top:6px;color:#e07070;"><strong style="font-size:11px;letter-spacing:1px;">⚠ 주의</strong> ${item.caution}</p>
+      </div>`;
+    c.appendChild(el);
+  });
+}
+
+function renderMEG() {
+  const c = document.getElementById('meg-container');
+  c.innerHTML = '';
+  MEG_DATA.forEach(m => {
+    const el = document.createElement('div');
+    el.className = 'meg-card';
+    const formatted = m.content.replace(/\n/g, '<br>');
+    el.innerHTML = `<div class="meg-title">${m.title}</div><div class="meg-body">${formatted}</div>`;
+    c.appendChild(el);
+  });
+}
+
+function renderLore() {
+  const c = document.getElementById('lore-container');
+  c.innerHTML = '';
+  LORE_DATA.forEach((l, i) => {
+    const el = document.createElement('div');
+    el.className = 'lore-block';
+    const formatted = l.content.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>');
+    el.innerHTML = `
+      <div class="lore-header" onclick="toggleLore(this.parentElement)">
+        <span class="lore-header-text">${l.title}</span>
+        <span class="lore-arrow">▸</span>
+      </div>
+      <div class="lore-body"><p>${formatted}</p></div>`;
+    c.appendChild(el);
+  });
+}
+
+// ============================================================
+// MODAL
+// ============================================================
+
+function openLevelModal(lv) {
+  document.getElementById('modal-topbar-text').textContent = `레벨 데이터 — LVL.${lv.id} — 기밀 해제`;
+  const survivalHtml = lv.survival ? lv.survival.map(s => `<li>${s}</li>`).join('') : '';
+  const detailFormatted = lv.detail ? lv.detail.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>') : lv.desc;
+  document.getElementById('modal-body').innerHTML = `
+    <div class="modal-title-row">
+      <div class="modal-id">LEVEL ${lv.id}</div>
+      <div class="modal-name">${lv.name}</div>
+      <div class="modal-name-en">${lv.nameEn}</div>
+      <div class="modal-tags">
+        <span class="tag tag-class${lv.class}">CLASS ${lv.class}</span>
+        <span class="tag" style="border-color:var(--yellow-dark);color:var(--yellow-dark);">${lv.env}</span>
+      </div>
+    </div>
+    <div class="modal-stats">
+      <div class="stat-item"><div class="stat-label">위험 등급</div><div class="stat-value">Class ${lv.class}</div></div>
+      <div class="stat-item"><div class="stat-label">엔티티 출몰률</div><div class="stat-value">${lv.entityRate}</div></div>
+      <div class="stat-item"><div class="stat-label">진동 주파수</div><div class="stat-value">${lv.freq}</div></div>
+      <div class="stat-item"><div class="stat-label">주요 자원</div><div class="stat-value">${lv.resources}</div></div>
+    </div>
+    <div class="modal-section">
+      <div class="modal-section-title">상세 서술</div>
+      <div class="modal-text"><p>${detailFormatted}</p></div>
+    </div>
+    ${survivalHtml ? `<div class="modal-section">
+      <div class="modal-section-title">생존 프로토콜</div>
+      <ul class="survival-list">${survivalHtml}</ul>
+    </div>` : ''}`;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function openEntityModal(en) {
+  document.getElementById('modal-topbar-text').textContent = `엔티티 데이터 — #${String(en.id).padStart(3,'0')} — 기밀 해제`;
+  const tagClass = en.threat === 'inhuman' ? 'tag-inhuman' : en.threat === 'hostile' ? 'tag-hostile' : en.threat === 'safe' ? 'tag-safe' : 'tag-neutral';
+  const threatLabel = en.threat === 'inhuman' ? '최상급 위험' : en.threat === 'hostile' ? '위험' : en.threat === 'safe' ? '무해' : '중립';
+  const cmHtml = en.countermeasures ? en.countermeasures.map(c => `<li>${c}</li>`).join('') : '';
+  const detailFormatted = en.detail ? en.detail.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>') : en.desc;
+  document.getElementById('modal-body').innerHTML = `
+    <div class="modal-title-row">
+      <div class="modal-id">ENTITY #${String(en.id).padStart(3,'0')}</div>
+      <div class="modal-name">${en.name}</div>
+      <div class="modal-name-en">${en.nameEn}</div>
+      <div class="modal-tags">
+        <span class="tag ${tagClass}">${threatLabel}</span>
+      </div>
+    </div>
+    <div class="modal-stats">
+      <div class="stat-item"><div class="stat-label">위협 등급</div><div class="stat-value">${threatLabel}</div></div>
+      <div class="stat-item"><div class="stat-label">크기</div><div class="stat-value">${en.size}</div></div>
+      <div class="stat-item"><div class="stat-label">체중</div><div class="stat-value">${en.weight}</div></div>
+      <div class="stat-item"><div class="stat-label">주 서식지</div><div class="stat-value">${en.habitat}</div></div>
+    </div>
+    <div class="modal-section">
+      <div class="modal-section-title">행동 양식 및 생태 정보</div>
+      <div class="modal-text"><p>${detailFormatted}</p></div>
+    </div>
+    ${cmHtml ? `<div class="modal-section">
+      <div class="modal-section-title">전술적 대응 지침</div>
+      <ul class="survival-list">${cmHtml}</ul>
+    </div>` : ''}`;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+
+function closeModalOutside(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+
+function showSection(id) {
+  document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('section-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+// ============================================================
+// FILTERS
+// ============================================================
+
+let currentLevelClass = 'all';
+let currentEntityType = 'all';
+let currentLevelSearch = '';
+let currentEntitySearch = '';
+
+function filterLevelClass(cls, btn) {
+  currentLevelClass = cls;
+  document.querySelectorAll('#level-filter-bar .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyLevelFilters();
+}
+
+function filterLevels(val) {
+  currentLevelSearch = val.toLowerCase();
+  applyLevelFilters();
+}
+
+function applyLevelFilters() {
+  let visible = 0;
+  document.querySelectorAll('#level-grid .card').forEach(card => {
+    const matchClass = currentLevelClass === 'all' || card.dataset.class === currentLevelClass;
+    const matchSearch = !currentLevelSearch || card.dataset.name.toLowerCase().includes(currentLevelSearch);
+    card.style.display = (matchClass && matchSearch) ? '' : 'none';
+    if (matchClass && matchSearch) visible++;
+  });
+  document.getElementById('level-no-results').style.display = visible === 0 ? '' : 'none';
+}
+
+function filterEntityType(type, btn) {
+  currentEntityType = type;
+  document.querySelectorAll('#section-entities .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyEntityFilters();
+}
+
+function filterEntities(val) {
+  currentEntitySearch = val.toLowerCase();
+  applyEntityFilters();
+}
+
+function applyEntityFilters() {
+  let visible = 0;
+  document.querySelectorAll('#entity-grid .card').forEach(card => {
+    const matchType = currentEntityType === 'all' || card.dataset.threat === currentEntityType;
+    const matchSearch = !currentEntitySearch || card.dataset.name.toLowerCase().includes(currentEntitySearch);
+    card.style.display = (matchType && matchSearch) ? '' : 'none';
+    if (matchType && matchSearch) visible++;
+  });
+  document.getElementById('entity-no-results').style.display = visible === 0 ? '' : 'none';
+}
+
+// ============================================================
+// LORE ACCORDION
+// ============================================================
+
+function toggleLore(el) {
+  el.classList.toggle('open');
+}
+
+// ============================================================
+// ESC KEY
+// ============================================================
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+
+// ============================================================
+// INIT
+// ============================================================
+renderLevels();
+renderEntities();
+renderItems();
+renderMEG();
+renderLore();
+</script>
+</body>
+</html>
